@@ -1,1 +1,994 @@
 # baehmmm.github.io
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fallakte: Die Physiker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 60er-Jahre Ermittlungsakte-Style - Optimiert für Lesbarkeit */
+        :root {
+            --paper-bg: #fdfaf2;        
+            --paper-dark: #e8dbbe;
+            --desk-bg: #2a2824;
+            --ink-black: #1a1a1a;        
+            --ink-dim: #5c584f;
+            --stamp-red: #a81c1c;      
+            --typewriter-blue: #324b6b;
+            --slide-width: 1200px;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--desk-bg);
+            background-image: radial-gradient(#3a3630 1px, transparent 1px);
+            background-size: 20px 20px;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            /* SEHR GUT LESBARE SCHRIFT FÜR TEXTE */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: var(--ink-black);
+        }
+
+        /* Schreibmaschinen-Schrift nur für Akzente */
+        h1, h2, h3, h4, .typewriter, input, textarea, select, .action-btn, .tab, .step-indicator, .scale-label {
+            font-family: 'Courier New', Courier, monospace !important;
+        }
+
+        /* Slide Container - Aktenmappe */
+        .slide-container {
+            width: 100%; max-width: var(--slide-width); height: 85vh; min-height: 700px;
+            background-color: var(--paper-bg); border-radius: 4px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 0 50px rgba(139,115,85,0.1);
+            display: none; flex-direction: column; overflow: hidden; 
+            border: 1px solid #b5a68d; position: relative;
+        }
+        
+        .slide-container::before {
+            content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 2px;
+            border-left: 2px solid #d4c5ab; border-right: 2px solid #d4c5ab; z-index: 1;
+        }
+
+        .slide-container.active { display: flex; animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Header & Content Area */
+        .slide-header-area { padding: 30px 40px 10px 60px; flex-shrink: 0; border-bottom: 2px solid var(--ink-black); background-color: var(--paper-bg); z-index: 10; }
+        .slide-content-area {
+            padding: 20px 40px 40px 60px; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column;
+            background-color: var(--paper-bg);
+        }
+
+        .slide-content-area::-webkit-scrollbar { width: 14px; }
+        .slide-content-area::-webkit-scrollbar-track { background: var(--paper-dark); border-left: 1px solid #b5a68d;}
+        .slide-content-area::-webkit-scrollbar-thumb { background: #8c8270; border: 2px solid var(--paper-dark); }
+
+        /* Progress Bar */
+        .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .progress-wrapper { flex-grow: 1; margin: 0 30px; height: 10px; background: transparent; border: 2px solid var(--ink-black); position: relative; }
+        .progress-fill { height: 100%; background: var(--typewriter-blue); width: 5%; transition: width 0.5s ease; }
+        .step-indicator { font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* Typography */
+        h1, h2, h3, h4 { margin: 0; font-weight: bold; line-height: 1.2; text-transform: uppercase; }
+        h1 { font-size: 45px; letter-spacing: -1px; text-align: center; margin-bottom: 20px; border: 4px solid var(--ink-black); padding: 10px; display: inline-block; }
+        .slide-title { font-size: 30px; margin-bottom: 15px; }
+        p, li { font-size: 18px; color: var(--ink-black); margin-top: 0; line-height: 1.6; }
+        
+        .secret-stamp {
+            color: var(--stamp-red); border: 4px solid var(--stamp-red); transform: rotate(-5deg); padding: 5px 15px;
+            font-size: 24px; font-weight: bold; display: inline-block; margin-bottom: 20px; letter-spacing: 3px; font-family: 'Courier New';
+        }
+
+        .content-flex { display: flex; gap: 40px; width: 100%; flex-wrap: wrap; }
+        .flex-1 { flex: 1; min-width: 300px; display: flex; flex-direction: column;}
+        
+        .tile { background: #faf5eb; border: 1px solid #b5a68d; padding: 20px; flex: 1; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); position: relative; }
+        .info-panel { background: rgba(0,0,0,0.04); padding: 20px; border: 2px dashed var(--ink-dim); margin-bottom: 20px; }
+        
+        /* Hilfekarten */
+        .help-card { display: none; background: #fffcf5; border: 1px solid var(--typewriter-blue); padding: 20px; margin-top: 15px; box-shadow: 3px 3px 0 var(--typewriter-blue); }
+        .help-card h4 { color: var(--typewriter-blue); margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid var(--typewriter-blue); padding-bottom: 5px;}
+        .help-btn { background: transparent; border: 2px solid var(--ink-black); color: var(--ink-black); padding: 8px 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.2s; box-shadow: 2px 2px 0 var(--ink-black); margin-bottom: 10px; font-family: 'Courier New';}
+        .help-btn:hover { background: var(--ink-black); color: var(--paper-bg); transform: translate(2px, 2px); box-shadow: 0 0 0 var(--ink-black); }
+
+        /* Eingabefelder */
+        input[type="text"], textarea, select {
+            width: 100%; padding: 10px 15px; background: rgba(255,255,255,0.5); 
+            border: 1px solid var(--ink-dim); border-bottom: 3px solid var(--ink-black);
+            color: var(--typewriter-blue); font-size: 18px; 
+            margin-top: 5px; margin-bottom: 20px; resize: vertical; transition: 0.2s;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-bottom: 3px solid var(--stamp-red); background: #fff; }
+        
+        label { font-weight: bold; font-family: 'Courier New'; font-size: 16px; color: var(--ink-black); }
+
+        /* Buttons */
+        .btn-group { display: flex; gap: 15px; margin-top: auto; padding-top: 20px; }
+        .action-btn {
+            background-color: var(--ink-black); color: var(--paper-bg); border: none; padding: 16px 24px; 
+            font-weight: bold; font-size: 18px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; flex: 1; text-align: center; border: 2px solid var(--ink-black); transition: 0.2s;
+        }
+        .action-btn:hover { background-color: var(--typewriter-blue); border-color: var(--typewriter-blue); }
+        .btn-secondary { background-color: transparent; color: var(--ink-black); }
+        .btn-secondary:hover { background-color: var(--paper-dark); color: var(--ink-black); border-color: var(--ink-black);}
+
+        .error-message { 
+            color: var(--stamp-red); font-weight: bold; font-size: 16px; margin-top: 15px; padding: 15px; 
+            border: 3px solid var(--stamp-red); display: none; text-transform: uppercase; letter-spacing: 1px; font-family: 'Courier New';
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><text x="10" y="50" font-family="Courier" font-size="20" fill="rgba(168,28,28,0.1)" transform="rotate(-20)">ABLEHNUNG</text></svg>');
+        }
+
+        .highlight { font-weight: bold; background: rgba(0,0,0,0.1); padding: 2px 5px; font-family: 'Courier New'; }
+
+        .dossier-details { background: #fffcf5; border: 2px solid var(--ink-black); margin-bottom: 15px; box-shadow: 4px 4px 0 rgba(0,0,0,0.1); }
+        .dossier-details summary { padding: 15px; font-weight: bold; font-size: 20px; cursor: pointer; background: var(--paper-dark); border-bottom: 1px solid transparent; text-transform: uppercase; font-family: 'Courier New';}
+        .dossier-details[open] summary { border-bottom: 2px solid var(--ink-black); }
+        .dossier-details p { padding: 20px; margin: 0; }
+
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 3px solid var(--ink-black); padding-left: 10px;}
+        .tab { background: var(--paper-dark); padding: 12px 20px; cursor: pointer; border: 2px solid var(--ink-black); border-bottom: none; border-radius: 5px 5px 0 0; font-weight: bold; margin-right: 5px; text-transform: uppercase; font-size: 16px;}
+        .tab.active-tab { background: var(--paper-bg); border-bottom: 3px solid var(--paper-bg); margin-bottom: -3px; color: var(--stamp-red);}
+        .tab-content { display: none; }
+        .active-content { display: block; }
+
+        /* L2 Zitate EINZEL-ANZEIGE */
+        .quote-presenter { 
+            background: #fffcf5; border: 3px dashed var(--ink-black); padding: 25px; 
+            margin-bottom: 30px; text-align: center; min-height: 140px; display: flex; flex-direction: column; justify-content: center;
+        }
+        .active-quote-text { font-size: 22px; font-weight: bold; color: var(--typewriter-blue); line-height: 1.4; }
+        
+        .drop-zones-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: start; }
+        .drop-zone { background: var(--paper-dark); border: 2px solid var(--ink-black); padding: 15px; min-height: 250px; display: flex; flex-direction: column; gap: 10px; transition: 0.2s; cursor: pointer; box-shadow: 3px 3px 0 rgba(0,0,0,0.1);}
+        .drop-zone:hover { background: #d4c5ab; transform: translateY(-2px); }
+        .drop-zone-title { font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 2px solid var(--ink-black); padding-bottom: 10px; margin-bottom: 10px; font-size: 18px; pointer-events: none; font-family: 'Courier New';}
+        
+        .assigned-quote { background: #fffcf5; border: 1px solid var(--ink-black); padding: 10px; font-size: 14px; cursor: pointer; border-left: 5px solid var(--ink-dim); transition: 0.2s;}
+        .assigned-quote:hover { background: #ffeaea; border-left-color: var(--stamp-red); text-decoration: line-through;}
+        .assigned-quote.correct-anim { border-left-color: var(--terminal-green) !important; background: #eaffe8; }
+        .assigned-quote.wrong-anim { border-left-color: var(--stamp-red) !important; background: #ffeaea; }
+
+        /* SCHIEBEREGLER STYLES */
+        .slider-container { display: flex; align-items: center; gap: 20px; margin: 30px 0 20px 0; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]:focus { outline: none; border: none; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 12px; cursor: pointer; background: var(--ink-black); border-radius: 6px; border: 1px solid #000; }
+        input[type=range]::-webkit-slider-thumb { border: 3px solid var(--ink-black); height: 34px; width: 34px; border-radius: 50%; background: var(--stamp-red); cursor: pointer; -webkit-appearance: none; margin-top: -12px; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+        input[type=range]:focus::-webkit-slider-runnable-track { background: var(--ink-dim); }
+        .slider-output { text-align: center; font-size: 28px; font-weight: bold; color: var(--stamp-red); margin-bottom: 30px; font-family: 'Courier New'; border: 2px dashed var(--stamp-red); padding: 10px; display: inline-block; min-width: 150px;}
+
+    </style>
+</head>
+<body>
+
+<div class="slide-container active" id="slide1">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Akte: Eröffnet</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 5%"></div></div>
+            <div class="step-indicator">CSI Les Cerisiers</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="justify-content: center; align-items: center; text-align: center;">
+        <div class="secret-stamp">STRENG GEHEIM</div>
+        <h1>ERMITTLUNGSAKTE:<br>DIE PHYSIKER</h1>
+        <p style="max-width: 800px; margin: 0 auto 40px auto; font-size: 22px; font-weight: bold;">
+            Inspektor Voß kennt die Täter.<br>Aber die Motive hinter den Morden sind unklar.<br><br>
+            Ihr seid das Ermittlungsteam CSI Les Cerisiers.
+        </p>
+        <div style="width: 300px;">
+            <button class="action-btn" onclick="showSlide(2)">Akte aufschlagen</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide2">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 1 // Mission</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 10%"></div></div>
+            <div class="step-indicator">Motivanalyse</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="justify-content: center; align-items: center; text-align: center; background-color: var(--ink-black); color: var(--paper-bg);">
+        <h2 style="font-size: 70px; margin-bottom: 20px; color: var(--paper-bg);">LEVEL 1</h2>
+        <p style="font-size: 32px; color: var(--stamp-red); font-weight: bold; letter-spacing: 5px;" class="typewriter">DIE MORDMOTIVE</p>
+        <hr style="width: 100px; border: 2px solid var(--paper-bg); margin: 30px auto;">
+        <p style="max-width: 600px; margin: 0 auto; color: #fff; font-size: 20px;">Findet heraus, warum Newton, Einstein und Möbius ihre Krankenschwestern töten. Nur mit korrekten Motiven öffnet sich der Tresor.</p>
+        <div class="btn-group" style="max-width: 400px; width: 100%; margin-top: 40px;">
+            <button class="action-btn btn-secondary" style="color: var(--paper-bg); border-color: var(--paper-bg);" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" style="background: var(--stamp-red); border-color: var(--stamp-red);" onclick="showSlide(3)">Zu den Profiler-Akten</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide3">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 1 // Profiler-Akten</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 20%"></div></div>
+            <div class="step-indicator">Beweisaufnahme</div>
+        </div>
+        <h2 class="slide-title">PROFILER-ARBEIT </h2>
+        <p style="font-size: 18px;">1. Textstelle lesen. 2. Fragen beantworten. <strong style="color: var(--stamp-red);">3. Jede Antwort mit Zitat UND Seitenzahl (S. oder Seite) belegen!</strong> </p>
+        
+        <div class="tabs" style="margin-top: 20px;">
+            <div class="tab active-tab" onclick="switchTab('newton')">Akte: Newton</div>
+            <div class="tab" onclick="switchTab('einstein')">Akte: Einstein</div>
+            <div class="tab" onclick="switchTab('moebius')">Akte: Möbius</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="padding-top: 0;">
+        
+        <div id="newton" class="tab-content active-content">
+            <div class="info-panel">
+                <span class="highlight">Leseauftrag: S. 62–64 & S. 68–72</span> (Gespräch der Physiker)
+                <button class="help-btn" onclick="toggleHelp('help_newton')" style="float: right; margin-top: -5px;"><i class="fa-solid fa-folder-open"></i> Hilfe</button>
+                <div class="help-card" id="help_newton">
+                    <h4>Hinweise Newton</h4>
+                    <p><strong>Warum im Sanatorium?</strong> S. 62: "Sie haben sich hier eingeschlichen?"<br>
+                    <strong>Rechtfertigung?</strong> S. 63: "Meine Mission..."<br>
+                    <strong>Wahres Ziel/Arbeitgeber?</strong> S. 68: "Doch ich bin nicht damit zufrieden..." & S. 70 "Warum nicht..."</p>
+                </div>
+            </div>
+            <label>1) Warum ist Newton im Sanatorium „Les Cerisiers“?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>2) Wie rechtfertigt Newton den Mord?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>3) Für wen arbeitet Newton?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>4) Was möchte Newton mit den Erkenntnissen von Möbius machen?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <div style="background: rgba(168,28,28,0.05); padding: 15px; border: 2px solid var(--stamp-red); margin-top: 15px;">
+                <label style="color: var(--stamp-red);">Hauptmotiv Newton (1 Satz):</label>
+                <input type="text" style="border-bottom-color: var(--stamp-red); color: var(--ink-black);" placeholder="Das primäre Motiv ist...">
+            </div>
+        </div>
+
+        <div id="einstein" class="tab-content">
+            <div class="info-panel">
+                <span class="highlight">Leseauftrag: S. 64–66 & S. 69–73</span>
+                <button class="help-btn" onclick="toggleHelp('help_einstein')" style="float: right; margin-top: -5px;"><i class="fa-solid fa-folder-open"></i> Hilfe</button>
+                <div class="help-card" id="help_einstein">
+                    <h4>Hinweise Einstein</h4>
+                    <p><strong>Warum im Sanatorium?</strong> S. 64: "Sie waren nicht der einzige Leser..."<br>
+                    <strong>Rechtfertigung?</strong> S. 65: "Überhaupt ging vieles schief..." / "Befehl ist Befehl."<br>
+                    <strong>Arbeitgeber?</strong> S. 69: "Wie soll ich es denn sonst sagen?" & S. 70 "Mir ist bloß mein..."</p>
+                </div>
+            </div>
+            <label>1) Warum ist Einstein im Sanatorium „Les Cerisiers“?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>2) Wie rechtfertigt Einstein den Mord?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>3) Für wen arbeitet Einstein?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>4) Was möchte Einstein mit den Erkenntnissen von Möbius machen?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <div style="background: rgba(168,28,28,0.05); padding: 15px; border: 2px solid var(--stamp-red); margin-top: 15px;">
+                <label style="color: var(--stamp-red);">Hauptmotiv Einstein (1 Satz):</label>
+                <input type="text" style="border-bottom-color: var(--stamp-red); color: var(--ink-black);" placeholder="Das primäre Motiv ist...">
+            </div>
+        </div>
+
+        <div id="moebius" class="tab-content">
+            <div class="info-panel">
+                <span class="highlight">Leseauftrag: S. 72–76</span>
+                <button class="help-btn" onclick="toggleHelp('help_moebius')" style="float: right; margin-top: -5px;"><i class="fa-solid fa-folder-open"></i> Hilfe</button>
+                <div class="help-card" id="help_moebius">
+                    <h4>Hinweise Möbius</h4>
+                    <p><strong>Warum im Sanatorium?</strong> S. 73: "Jeder preist mir eine andere Theorie an..." / "Es gibt Risiken, die man nicht eingehen darf."<br>
+                    <strong>Rechtfertigung?</strong> S. 75: "Wer tötet, ist ein Mörder..."<br>
+                    <strong>Reaktion auf andere?</strong> S. 73: "Sind wenigstens Ihre Physiker frei?" & S. 76: "Wir sind wilde Tiere..."</p>
+                </div>
+            </div>
+            <label>1) Warum ist Möbius im Sanatorium „Les Cerisiers“?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>2) Wie rechtfertigt Möbius den Mord?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>3) Einstein und Newton arbeiten für Geheimdienste. Für wen arbeitet Möbius?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>4) Wie reagiert Möbius auf die Versuche, ihn zu gewinnen?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <div style="background: rgba(168,28,28,0.05); padding: 15px; border: 2px solid var(--stamp-red); margin-top: 15px;">
+                <label style="color: var(--stamp-red);">Hauptmotiv Möbius (1 Satz):</label>
+                <input type="text" style="border-bottom-color: var(--stamp-red); color: var(--ink-black);" placeholder="Das primäre Motiv ist...">
+            </div>
+        </div>
+
+        <div id="error_profiler" class="error-message">FEHLER: MINDESTENS EIN FELD WURDE NICHT KORREKT MIT EINER SEITENZAHL BELEGT (S. ... ODER SEITE ... MUSS ENTHALTEN SEIN).</div>
+
+        <div class="btn-group" style="margin-top: 30px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="validateProfilerAkten()">Beweisaufnahme abschließen (Zum Tresor)</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide4">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 1 // Abschluss</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 30%"></div></div>
+            <div class="step-indicator">Motivcode</div>
+        </div>
+        <h2 class="slide-title">TRESOR 1: MOTIVCODE</h2>
+    </div>
+    <div class="slide-content-area" style="align-items: center;">
+        <div class="tile" style="max-width: 800px; width: 100%; text-align: center; margin-top: 20px;">
+            <p style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Welches Hauptmotiv treibt die Täter an? Findet den 3-stelligen Buchstaben-Code.</p>
+            
+            <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
+                <div style="border: 2px solid var(--ink-black); padding: 10px; width: 180px; font-family: 'Courier New';"><strong>G</strong> = Geheimauftrag</div>
+                <div style="border: 2px solid var(--ink-black); padding: 10px; width: 180px; font-family: 'Courier New';"><strong>E</strong> = Ehrgeiz</div>
+                <div style="border: 2px solid var(--ink-black); padding: 10px; width: 180px; font-family: 'Courier New';"><strong>T</strong> = Tarnung</div>
+                <div style="border: 2px solid var(--ink-black); padding: 10px; width: 180px; font-family: 'Courier New';"><strong>H</strong> = Höherer Zweck</div>
+                <div style="border: 2px solid var(--ink-black); padding: 10px; width: 180px; font-family: 'Courier New';"><strong>D</strong> = Druck</div>
+            </div>
+            <p style="font-size: 22px; margin-bottom: 10px; background: var(--paper-dark); display: inline-block; padding: 5px 15px; border: 1px solid var(--ink-black);" class="typewriter">Reihenfolge: <strong>Newton — Einstein — Möbius</strong></p>
+            <input type="text" id="input_code1" placeholder="___ - ___ - ___" style="text-align: center; font-size: 40px; width: 100%; max-width: 400px; letter-spacing: 15px; margin: 20px auto; display: block; border-bottom: 3px dashed var(--ink-black);">
+            
+            <div id="error1" class="error-message">FALSCHER CODE. AKTEN ERNEUT PRÜFEN.</div>
+            
+            <div class="btn-group" style="max-width: 400px; margin: 30px auto 0 auto;">
+                <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+                <button class="action-btn" onclick="validateCode1()">Tresor öffnen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide5">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 2 // Ethik</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 40%"></div></div>
+            <div class="step-indicator">Verantwortung</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="justify-content: center; align-items: center; text-align: center;">
+        <h2 style="font-size: 70px; margin-bottom: 20px;">LEVEL 2</h2>
+        <p style="font-size: 32px; font-weight: bold; letter-spacing: 2px;" class="typewriter">DAS LABOR DER ETHIK</p>
+        <hr style="width: 100px; border: 2px solid var(--ink-black); margin: 30px auto;">
+        <div class="info-panel" style="max-width: 700px; text-align: left; font-size: 20px;">
+            Im ersten Level habt ihr die Mordmotive der Physiker untersucht. Jetzt betretet ihr das Labor der Ethik.<br><br>
+            Hier geht es um eine andere Frage: <strong>Wie denken Wissenschaftler über Verantwortung?</strong><br><br>
+            Eure Aufgabe:<br>
+            1. Drei Denkrichtungen zur Wissenschaft verstehen.<br>
+            2. Zitate diesen Denkrichtungen zuordnen.<br>
+            3. Ein Statement der Ethikkommission schreiben.
+        </div>
+        <div class="btn-group" style="max-width: 400px; width: 100%; margin-top: 20px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="showSlide(6)">Zu den Denkschulen</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide6">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Labor // Wissen</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 50%"></div></div>
+            <div class="step-indicator">Denkschulen</div>
+        </div>
+        <h2 class="slide-title">WISSENSCHAFTLICHE DENKSCHULEN</h2>
+    </div>
+    <div class="slide-content-area">
+        <p style="font-weight: bold; margin-bottom: 20px; font-size: 20px;">Klicke auf die Akten, um die vollständigen Informationstexte der Denkschulen zu lesen.</p>
+        
+        <details class="dossier-details">
+            <summary>Akte 1: Fortschrittsoptimismus <i class="fa-solid fa-chevron-down" style="float:right;"></i></summary>
+            <p><strong>Denkschule 1: Fortschrittsoptimismus</strong><br><br>In der Denkschule des Fortschrittsoptimismus steht der Glaube an den Fortschritt der Wissenschaft im Zentrum. Wissenschaft wird hier vor allem als Motor verstanden, der die Welt voranbringt. Neue Entdeckungen und Theorien gelten grundsätzlich als etwas Positives. Sie zeigen, dass der Mensch „weiter sehen“ kann als frühere Generationen. Typisch ist die Vorstellung, dass jede Generation auf dem aufbaut, was die vorherigen erarbeitet haben, und dadurch „auf den Schultern von Riesen“ steht.<br><br>Wissenschaftliche Erkenntnisse werden daher als wertvoller Gewinn gesehen – unabhängig davon, wie sie später verwendet werden. Ob dieses Wissen später für friedliche oder zerstörerische Zwecke genutzt wird, wird nicht als Hauptaufgabe der Forschenden gesehen.<br><br><strong>Typische Stichwörter:</strong> Fortschritt – Wissen – Entdeckung – Naturgesetze – Nutzen</p>
+        </details>
+        <details class="dossier-details">
+            <summary>Akte 2: Verantwortungsethik <i class="fa-solid fa-chevron-down" style="float:right;"></i></summary>
+            <p><strong>Denkschule 2: Verantwortungsethik der Wissenschaft</strong><br><br>Die Denkschule der Verantwortungsethik geht von einer einfachen Beobachtung aus: Wissenschaft ist nicht neutral, weil ihre Ergebnisse die Welt tiefgreifend verändern. Neue Technologien können enormen Nutzen bringen, aber auch großen Schaden. Forscherinnen und Forscher haben eine besondere Verantwortung für die Folgen ihrer Entdeckungen.<br><br>Forschen bedeutet hier immer auch, über Konsequenzen und Grenzen nachzudenken. Zur Verantwortungsethik gehört deshalb, vor gefährlichen Entwicklungen offen zu warnen und sich für Regeln einzusetzen, die Missbrauch erschweren.<br><br><strong>Typische Stichwörter:</strong> Verantwortung – Folgen – Konsequenzen – Grenzen – Ethik – Kontrolle</p>
+        </details>
+        <details class="dossier-details">
+            <summary>Akte 3: Gewissensdilemma <i class="fa-solid fa-chevron-down" style="float:right;"></i></summary>
+            <p><strong>Denkschule 3: Gewissensdilemma der Wissenschaft</strong><br><br>Die Denkschule des Gewissensdilemmas rückt die innere Zerrissenheit von Wissenschaftlerinnen und Wissenschaftlern in den Mittelpunkt. Was macht es mit einem Menschen, wenn seine Entdeckung zu zerstörerischen Folgen führt? Ein Gewissensdilemma entsteht zum Beispiel, wenn jemand erkennt: „Ich habe an einer Waffe mitgearbeitet, die Städte vernichten kann.“<br><br>In dieser Denkschule geht es daher stark um Rückblick und Selbsturteil. Wissenschaft wird als Tätigkeit gesehen, die die Seele und das Gewissen einer Person tief treffen kann. Die Person fühlt sich vielleicht schuldig, spricht von „Sünde“, von „Zerstörung“ oder davon, dass sie zum „Tod“ geworden sei.<br><br><strong>Typische Stichwörter:</strong> Gewissen – Schuld – Reue – Dilemma – Grenzen</p>
+        </details>
+        
+        <div class="info-panel" style="margin-top: 30px;">
+            <label style="display: block; margin-bottom: 10px;">Aufgabe 1: Beschreibe jede Denkschule in 1-2 Sätzen und benenne je zwei Stichwörter.</label>
+            <textarea id="l2_task1" placeholder="A) ... B) ... C) ..." style="min-height: 100px; margin-bottom: 0;"></textarea>
+            <div id="error_l2t1" class="error-message">EINTRAG ZU KURZ. BITTE GENAUER BESCHREIBEN.</div>
+            <div class="btn-group" style="max-width: 400px; margin: 20px 0 0 0;">
+                <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+                <button class="action-btn" onclick="validateL2Task1()">Akte schließen & Weiter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide7">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Labor // Analyse</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 60%"></div></div>
+            <div class="step-indicator">Zitat-Dossier</div>
+        </div>
+        <h2 class="slide-title">INTERAKTIVES DOSSIER </h2>
+    </div>
+    <div class="slide-content-area" style="position: relative;">
+        
+        <div class="quote-presenter">
+            <p style="font-weight: bold; color: var(--stamp-red); font-size: 16px; margin-bottom: 10px;" class="typewriter" id="instruction-text">
+                <i class="fa-solid fa-hand-pointer"></i> BEDIENUNG: Lies das Zitat und klicke auf die passende Akte unten (A, B oder C), um es zuzuordnen.
+            </p>
+            <div id="active-quote-container">
+                </div>
+        </div>
+
+        <div class="drop-zones-container">
+            <div class="drop-zone" onclick="dropQuoteToZone('A')" id="zoneA">
+                <div class="drop-zone-title">A) Fortschrittsoptimismus</div>
+            </div>
+            <div class="drop-zone" onclick="dropQuoteToZone('B')" id="zoneB">
+                <div class="drop-zone-title">B) Verantwortungsethik</div>
+            </div>
+            <div class="drop-zone" onclick="dropQuoteToZone('C')" id="zoneC">
+                <div class="drop-zone-title">C) Gewissensdilemma</div>
+            </div>
+        </div>
+        
+        <div class="info-panel" style="margin-top: 30px;">
+            <label style="display: block; margin-bottom: 10px;">Aufgabe 2: Begründe zwei Zuordnungen in je einem Satz :</label>
+            <textarea id="l2_task2" placeholder="Begründung 1: ... &#10;Begründung 2: ..." style="min-height: 80px;"></textarea>
+            <div id="error_l2t2" class="error-message"></div>
+            <div class="btn-group" style="max-width: 400px; margin-top: 15px;">
+                <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+                <button class="action-btn" onclick="validateL2Task2()">Dossier überprüfen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide8">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Labor // Urteil</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 70%"></div></div>
+            <div class="step-indicator">Ethik-Statement</div>
+        </div>
+        <h2 class="slide-title">STATEMENT DER ETHIKKOMMISSION</h2>
+    </div>
+    <div class="slide-content-area">
+        <div class="content-flex">
+            <div class="flex-1">
+                <div class="info-panel" style="border: 2px solid var(--ink-black);">
+                    <h3 style="margin-bottom: 10px;">Aufgabe 3 </h3>
+                    <p style="font-size: 16px; margin-bottom: 0;">Schreibe ein Statement (3-4 Sätze). <br><strong>Bedingungen:</strong><br>- Bezug auf mind. 2 Denkschulen (Namen: Newton, Einstein, Oppenheimer)<br>- Mind. 3 Begriffe nutzen: <strong>Verantwortung, Konsequenzen, Grenzen</strong><br>- Beurteile Oppenheimer.</p>
+                </div>
+                <textarea id="ethics_statement" placeholder="Hier tippen..." style="flex-grow: 1; min-height: 200px;"></textarea>
+                
+                <div id="error_l2t3" class="error-message"></div>
+                
+                <div class="btn-group" style="margin-top: 10px;">
+                    <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+                    <button class="action-btn" onclick="validateL2Task3()">Prüfen & Freigeben</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide9">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Urteil</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 75%"></div></div>
+            <div class="step-indicator">Schuldwaagen</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="justify-content: center; align-items: center; text-align: center; background-color: var(--ink-black); color: var(--paper-bg);">
+        <h2 style="font-size: 70px; color: var(--paper-bg); margin-bottom: 20px;">LEVEL 3</h2>
+        <p style="font-size: 32px; font-weight: bold; letter-spacing: 2px; color: var(--stamp-red);" class="typewriter">SCHULDWAAGEN & POSITIONSLINIE</p>
+        <hr style="width: 100px; border: 2px solid var(--paper-bg); margin: 30px auto;">
+        <p style="max-width: 600px; margin: 0 auto; color: #fff; font-size: 20px;">Der Beweisraum ist offen. Bestimmt nun anhand der Taten und Reaktionen die endgültige Schuld der Physiker auf einer prozentualen Skala.</p>
+        <div class="btn-group" style="max-width: 400px; width: 100%; margin-top: 40px;">
+            <button class="action-btn btn-secondary" style="color: var(--paper-bg); border-color: var(--paper-bg);" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" style="background: var(--stamp-red); border-color: var(--stamp-red);" onclick="showSlide(10)">Beweisraum betreten</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide10">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Beweisraum</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 80%"></div></div>
+            <div class="step-indicator">Tat & Reaktion</div>
+        </div>
+        <h2 class="slide-title">TAT, REAKTION UND SCHULD</h2>
+    </div>
+    <div class="slide-content-area">
+        <div class="info-panel">
+            <h3 class="highlight">Arbeitsauftrag – Inputphase</h3>
+            <p style="margin-top: 10px;">Lies die folgenden Textausschnitte aufmerksam.<br>
+            Beschreibe , wie die jeweilige Tat abläuft. Erläutere , wie die Figur nach der Tat darüber spricht oder reagiert.<br>
+            Nutze diese Informationen gleich für dein Urteil auf der Positionslinie.</p>
+        </div>
+        
+        <div class="content-flex" style="gap: 20px;">
+            <div class="tile">
+                <h3 style="border-bottom: 2px solid var(--ink-black); margin-bottom: 15px; padding-bottom: 5px;">Möbius</h3>
+                <p>Möbius erdrosselt Schwester Monika Stettler im Sanatorium. Kurz zuvor hat sie ihm ihre Liebe gestanden und ist bereit, ihm zu folgen. Möbius tötet sie dennoch, obwohl sie ihm vertraut.</p>
+                <p>Nach der Tat spricht Möbius offen über das Geschehen und sagt:<br><strong>„Wer tötet, ist ein Mörder, und wir haben getötet.“</strong></p>
+            </div>
+            <div class="tile">
+                <h3 style="border-bottom: 2px solid var(--ink-black); margin-bottom: 15px; padding-bottom: 5px;">Newton</h3>
+                <p>Newton erdrosselt Schwester Dorothea Moser. Er handelt gezielt und ohne sichtbares Zögern.</p>
+                <p>Nach der Tat verweist Newton auf seinen Auftrag und erklärt:<br><strong>„Befehl ist Befehl.“</strong></p>
+            </div>
+            <div class="tile">
+                <h3 style="border-bottom: 2px solid var(--ink-black); margin-bottom: 15px; padding-bottom: 5px;">Einstein</h3>
+                <p>Einstein erdrosselt Schwester Irene Straub. Er akzeptiert den Tod als Teil seines Vorgehens.</p>
+                <p>Nach der Tat erklärt er sein Handeln mit den Worten:<br><strong>„Gewisse Risiken muss man schließlich eingehen.“</strong></p>
+            </div>
+        </div>
+        
+        <div class="btn-group" style="margin-top: 30px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="showSlide(11)">Zur Positionslinie (Möbius)</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide11">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Urteil</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 84%"></div></div>
+            <div class="step-indicator">Möbius</div>
+        </div>
+        <h2 class="slide-title">POSITIONSLINIE – MÖBIUS</h2>
+    </div>
+    <div class="slide-content-area">
+        
+        <div class="slider-container">
+            <span class="scale-label" style="text-align: right;">UNSCHULDIG<br>0%</span>
+            <input type="range" id="sliderM" min="0" max="100" value="50" oninput="document.getElementById('valM').innerText = this.value + '%'">
+            <span class="scale-label">SCHULDIG<br>100%</span>
+        </div>
+        <div style="text-align: center;"><div class="slider-output" id="valM">50%</div></div>
+
+        <div class="info-panel">
+            <h3 class="highlight">Arbeitsauftrag – Urteil Möbius</h3>
+            <p style="margin-top: 10px;">
+                <strong>Ordne ein :</strong> Setze Möbius auf der Skala (Prozente) ein.<br>
+                <strong>Belege :</strong> Nenne ein Zitat aus dem Input, das deine Entscheidung stützt.<br>
+                <strong>Beurteile :</strong> Begründe deine Entscheidung in 1–2 Sätzen.
+            </p>
+        </div>
+
+        <input type="text" id="quoteM" placeholder="Pflichtfeld: Zitat: „__________________________“ (S. ___)" style="font-family: 'Courier New'; font-weight:bold;">
+        <textarea id="reasonM" placeholder="Pflichtfeld: Begründung: __________________________" style="min-height: 100px; font-family: 'Courier New'; font-weight:bold;"></textarea>
+
+        <div class="help-card" style="display:block; border-color:var(--stamp-red); background:rgba(168,28,28,0.05); box-shadow:none;">
+            <h4 style="color:var(--stamp-red);"><i class="fa-solid fa-scale-unbalanced"></i> Orientierung</h4>
+            <p>Vertrauensbruch + bewusste Tat → hoher Prozentwert<br>Offene Schuldeinsicht → kann entlasten (Prozentwert verringern)</p>
+        </div>
+
+        <div id="error_l3m" class="error-message">FEHLER: BITTE BEIDE TEXTFELDER AUSFÜLLEN.</div>
+
+        <div class="btn-group" style="margin-top: 20px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="validateL3M()">Weiter: Newton</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide12">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Urteil</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 92%"></div></div>
+            <div class="step-indicator">Newton</div>
+        </div>
+        <h2 class="slide-title">POSITIONSLINIE – NEWTON</h2>
+    </div>
+    <div class="slide-content-area">
+        
+        <div class="slider-container">
+            <span class="scale-label" style="text-align: right;">UNSCHULDIG<br>0%</span>
+            <input type="range" id="sliderN" min="0" max="100" value="50" oninput="document.getElementById('valN').innerText = this.value + '%'">
+            <span class="scale-label">SCHULDIG<br>100%</span>
+        </div>
+        <div style="text-align: center;"><div class="slider-output" id="valN">50%</div></div>
+
+        <div class="info-panel">
+            <h3 class="highlight">Arbeitsauftrag – Urteil Newton</h3>
+            <p style="margin-top: 10px;">
+                <strong>Ordne ein :</strong> Setze Newton auf der Skala ein.<br>
+                <strong>Belege :</strong> Nenne ein Zitat aus dem Input.<br>
+                <strong>Beurteile :</strong> Begründe deine Entscheidung in 1–2 Sätzen.
+            </p>
+        </div>
+
+        <input type="text" id="quoteE" placeholder="Pflichtfeld: Zitat: „__________________________“ (S. ___)" style="font-family: 'Courier New'; font-weight:bold;">
+        <textarea id="reasonE" placeholder="Pflichtfeld: Begründung: __________________________" style="min-height: 100px; font-family: 'Courier New'; font-weight:bold;"></textarea>
+
+        <div class="help-card" style="display:block; border-color:var(--stamp-red); background:rgba(168,28,28,0.05); box-shadow:none;">
+            <h4 style="color:var(--stamp-red);"><i class="fa-solid fa-scale-unbalanced"></i> Orientierung</h4>
+            <p>Akzeptanz von „Risiken“ → bewusste Inkaufnahme von Tod<br>Keine sichtbare Reue → verschärft Schuldfrage</p>
+        </div>
+
+        <div id="error_l3e" class="error-message">FEHLER: BITTE BEIDE TEXTFELDER AUSFÜLLEN.</div>
+
+        <div class="btn-group" style="margin-top: 20px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="showSlide(13)">Weiter: Einstein</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide13">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Urteil</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 92%"></div></div>
+            <div class="step-indicator">Einstein</div>
+        </div>
+        <h2 class="slide-title">POSITIONSLINIE – EINSTEIN</h2>
+    </div>
+    <div class="slide-content-area">
+        
+        <div class="slider-container">
+            <span class="scale-label" style="text-align: right;">UNSCHULDIG<br>0%</span>
+            <input type="range" id="sliderE" min="0" max="100" value="50" oninput="document.getElementById('valE').innerText = this.value + '%'">
+            <span class="scale-label">SCHULDIG<br>100%</span>
+        </div>
+        <div style="text-align: center;"><div class="slider-output" id="valE">50%</div></div>
+
+        <div class="info-panel">
+            <h3 class="highlight">Arbeitsauftrag – Urteil Einstein</h3>
+            <p style="margin-top: 10px;">
+                <strong>Ordne ein :</strong> Setze Einstein auf der Skala ein.<br>
+                <strong>Belege :</strong> Nenne ein Zitat aus dem Input.<br>
+                <strong>Beurteile :</strong> Begründe deine Entscheidung in 1–2 Sätzen.
+            </p>
+        </div>
+
+        <input type="text" id="quoteE" placeholder="Pflichtfeld: Zitat: „__________________________“ (S. ___)" style="font-family: 'Courier New'; font-weight:bold;">
+        <textarea id="reasonE" placeholder="Pflichtfeld: Begründung: __________________________" style="min-height: 100px; font-family: 'Courier New'; font-weight:bold;"></textarea>
+
+        <div class="help-card" style="display:block; border-color:var(--stamp-red); background:rgba(168,28,28,0.05); box-shadow:none;">
+            <h4 style="color:var(--stamp-red);"><i class="fa-solid fa-scale-unbalanced"></i> Orientierung</h4>
+            <p>Akzeptanz von „Risiken“ → bewusste Inkaufnahme von Tod<br>Keine sichtbare Reue → verschärft Schuldfrage</p>
+        </div>
+
+        <div id="error_l3e" class="error-message">FEHLER: BITTE BEIDE TEXTFELDER AUSFÜLLEN.</div>
+
+        <div class="btn-group" style="margin-top: 20px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="showSlide(14)">Weiter zum Urteil</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide14">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Finale</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 98%"></div></div>
+            <div class="step-indicator">Urteil</div>
+        </div>
+        <h2 class="slide-title">ABSCHLUSSURTEIL</h2>
+    </div>
+    <div class="slide-content-area">
+        
+        <div class="info-panel" style="border: 2px solid var(--ink-black);">
+            <h3 class="highlight">Arbeitsauftrag – Vergleich</h3>
+            <p style="margin-top: 10px;">
+                Vergleiche die drei Positionen.<br>
+                Beurteile, welcher Physiker am stärksten schuldhaft gehandelt hat.<br>
+                Begründe deine Entscheidung mit einem Vergleich der Taten und Reaktionen nach der Tat.
+            </p>
+        </div>
+
+        <textarea id="finalCompare" placeholder="Dein Abschlussurteil (2-3 Sätze)..." style="min-height: 200px;"></textarea>
+        
+        <div id="error_l3c" class="error-message">FEHLER: BITTE EIN ABSCHLUSSURTEIL SCHREIBEN.</div>
+
+        <div class="btn-group" style="margin-top: 30px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="finishGame()">Fall abschließen</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide15">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">System // Archivierung</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 100%"></div></div>
+            <div class="step-indicator">Abgeschlossen</div>
+        </div>
+        <h2 class="slide-title">AKTE ARCHIVIERT</h2>
+    </div>
+    <div class="slide-content-area" style="align-items: center; justify-content: center; text-align: center;">
+        
+        <div style="background: #fffcf5; padding: 40px; border: 4px solid var(--stamp-red); position: relative; max-width: 700px; width: 100%;">
+            <div class="secret-stamp" style="position: absolute; top: -20px; left: -20px;">GESCHLOSSEN</div>
+            <h1 style="color: var(--ink-black); font-size: 45px; margin-bottom: 10px; border: none;">FALL ABGESCHLOSSEN</h1>
+            <p style="font-size: 20px;">Dein generierter Urteilscode lautet:</p>
+            
+            <div id="code_display" style="font-size: 40px; color: var(--stamp-red); font-family: 'Courier New', monospace; font-weight: bold; letter-spacing: 2px; margin: 20px 0; padding: 20px; background: rgba(168,28,28,0.05); border: 2px dashed var(--stamp-red);"></div>
+            
+            <p style="margin-top: 20px;"><strong>Diskussion für die Klasse:</strong><br>Wo wart ihr euch einig? Wo gab es Zweifel – und warum?</p>
+            
+            <button class="action-btn btn-secondary" onclick="location.reload()" style="max-width: 300px; margin: 30px auto 0 auto; border-color: var(--ink-black); font-weight: bold;"><i class="fa-solid fa-rotate-right"></i> System Neustart</button>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+    let currentSlide = 1;
+
+    function showSlide(n) {
+        document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+        const newSlide = document.getElementById('slide' + n);
+        newSlide.classList.add('active');
+        currentSlide = n;
+        
+        const contentArea = newSlide.querySelector('.slide-content-area');
+        if (contentArea) { contentArea.scrollTop = 0; }
+    }
+
+    function nextSlide() { showSlide(currentSlide + 1); }
+    function prevSlide() { if(currentSlide > 1) showSlide(currentSlide - 1); }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
+        document.querySelectorAll('.tab').forEach(el => el.classList.remove('active-tab'));
+        document.getElementById(tabId).classList.add('active-content');
+        event.target.classList.add('active-tab');
+    }
+
+    function toggleHelp(id) {
+        let el = document.getElementById(id);
+        if (el.style.display === 'block') {
+            el.style.display = 'none';
+        } else {
+            el.style.display = 'block';
+            el.scrollIntoView({behavior: "smooth", block: "nearest"});
+        }
+    }
+
+    // LEVEL 1: Validierung S. oder Seite
+    function validateProfilerAkten() {
+        const inputs = document.querySelectorAll('.page-validation');
+        let allValid = true;
+        inputs.forEach(input => {
+            const val = input.value.toLowerCase();
+            if (val.trim() === '' || (!val.match(/s\.|seite|s \d+/i))) {
+                allValid = false;
+                input.style.borderBottomColor = 'var(--stamp-red)';
+                input.style.backgroundColor = 'rgba(168,28,28,0.05)';
+            } else {
+                input.style.borderBottomColor = 'var(--ink-black)';
+                input.style.backgroundColor = 'rgba(255,255,255,0.5)';
+            }
+        });
+
+        if (allValid) {
+            document.getElementById('error_profiler').style.display = 'none';
+            showSlide(4);
+        } else {
+            document.getElementById('error_profiler').style.display = 'block';
+        }
+    }
+
+    function validateCode1() {
+        const val = document.getElementById('input_code1').value.toUpperCase().replace(/[^A-Z]/g, '');
+        if(val === 'GGH') {
+            document.getElementById('error1').style.display = 'none';
+            showSlide(5);
+        } else {
+            document.getElementById('error1').style.display = 'block';
+        }
+    }
+
+    function validateL2Task1() {
+        const val = document.getElementById('l2_task1').value.trim();
+        if(val.length > 20) {
+            document.getElementById('error_l2t1').style.display = 'none';
+            showSlide(7);
+        } else {
+            document.getElementById('error_l2t1').style.display = 'block';
+        }
+    }
+
+    // LEVEL 2 - Einzel-Zitat Präsentation (Neues Logik-System mit funktionierendem Event Bubbling Schutz)
+    const quotesData = [
+        { id: 1, text: "„In einem sehr einfachen, aber tiefen Sinn haben die Physiker die Sünde kennengelernt.“ – Oppenheimer", correct: "C" },
+        { id: 2, text: "„Jetzt bin ich der Tod geworden, der Zerstörer der Welten.“ – Oppenheimer", correct: "C" },
+        { id: 3, text: "„Es gibt Risiken, die man nicht eingehen darf.“ – Möbius", correct: "B" },
+        { id: 4, text: "„Wer tötet, ist ein Mörder, und wir haben getötet.“ – Möbius", correct: "C" },
+        { id: 5, text: "„Wenn ich weiter sehen konnte als andere, dann nur, weil ich auf den Schultern von Riesen stand.“ – Newton", correct: "A" },
+        { id: 6, text: "„Die entfesselte Macht des Atoms hat alles verändert – nur unsere Art zu denken nicht.“ – Einstein", correct: "B" }
+    ];
+    let remainingQuotes = [...quotesData];
+
+    function renderNextQuote() {
+        const container = document.getElementById('active-quote-container');
+        if (remainingQuotes.length > 0) {
+            const q = remainingQuotes[0];
+            container.innerHTML = `<div class="active-quote-text">"${q.text}"</div>`;
+            document.getElementById('instruction-text').innerHTML = `<i class="fa-solid fa-hand-pointer"></i> BEDIENUNG: Lies das Zitat und klicke auf die passende Akte unten (A, B oder C), um es zuzuordnen.`;
+        } else {
+            container.innerHTML = `<div style="font-weight: bold; color: var(--terminal-green); font-size: 22px;"><i class="fa-solid fa-check-circle"></i> Alle Zitate wurden abgelegt! Klicke unten auf "Dossier überprüfen".</div>`;
+            document.getElementById('instruction-text').innerHTML = `Fehler gemacht? Klicke auf ein Zitat in den Akten unten, um es zurückzuholen.`;
+        }
+    }
+
+    function dropQuoteToZone(zoneId) {
+        if (remainingQuotes.length === 0) return; 
+        
+        const q = remainingQuotes.shift(); 
+        const zoneDiv = document.getElementById('zone' + zoneId);
+        
+        const quoteHTML = document.createElement('div');
+        quoteHTML.className = "assigned-quote";
+        quoteHTML.setAttribute("data-quote-id", q.id);
+        quoteHTML.setAttribute("data-correct", q.correct);
+        quoteHTML.innerText = q.text;
+        
+        quoteHTML.onclick = function(event) {
+            event.stopPropagation(); // WICHTIG: Verhindert Event-Bubbling an die Dropzone!
+            returnQuoteToPool(q.id, this);
+        };
+        
+        zoneDiv.appendChild(quoteHTML);
+        renderNextQuote();
+    }
+
+    function returnQuoteToPool(quoteId, elementHtml) {
+        const q = quotesData.find(x => x.id === quoteId);
+        remainingQuotes.unshift(q); 
+        elementHtml.remove(); 
+        
+        document.getElementById('error_l2t2').style.display = 'none';
+        document.querySelectorAll('.assigned-quote').forEach(el => {
+            el.classList.remove('correct-anim');
+            el.classList.remove('wrong-anim');
+        });
+        
+        renderNextQuote();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { renderNextQuote(); });
+
+    function validateL2Task2() {
+        const errorBox = document.getElementById('error_l2t2');
+        
+        if (remainingQuotes.length > 0) {
+            errorBox.innerHTML = "FEHLER: ES SIND NOCH NICHT ALLE ZITATE EINSORTIERT.";
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        const assignedQuotes = document.querySelectorAll('.assigned-quote');
+        let allCorrect = true;
+
+        assignedQuotes.forEach(q => {
+            const correctZone = q.getAttribute('data-correct');
+            const currentZoneId = q.parentElement.id.replace('zone', ''); 
+            
+            if (currentZoneId === correctZone) {
+                q.classList.remove('wrong-anim');
+                q.classList.add('correct-anim');
+            } else {
+                q.classList.remove('correct-anim');
+                q.classList.add('wrong-anim');
+                allCorrect = false;
+            }
+        });
+
+        const t = document.getElementById('l2_task2').value.trim();
+
+        if (!allCorrect) {
+            errorBox.innerHTML = "FEHLER: EINIGE ZITATE WURDEN FALSCH ABGELEGT (ROT MARKIERT). KLICKE SIE AN, UM SIE ZURÜCKZUHOLEN.";
+            errorBox.style.display = 'block';
+        } else if (t.length <= 15) {
+            errorBox.innerHTML = "FEHLER: DIE BEGRÜNDUNG (AUFGABE 2) IST ZU KURZ ODER FEHLT GANZ.";
+            errorBox.style.display = 'block';
+        } else {
+            errorBox.style.display = 'none';
+            showSlide(8);
+        }
+    }
+
+    function validateL2Task3() {
+        const text = document.getElementById('ethics_statement').value.toLowerCase();
+        const errBox = document.getElementById('error_l2t3');
+        let errors = [];
+        
+        if (!text.includes('verantwortung')) errors.push("Wort fehlt: 'Verantwortung'");
+        if (!text.includes('konsequenzen')) errors.push("Wort fehlt: 'Konsequenzen'");
+        if (!text.includes('grenzen')) errors.push("Wort fehlt: 'Grenzen'");
+        const hasName = text.includes('newton') || text.includes('einstein') || text.includes('oppenheimer');
+        if (!hasName) errors.push("Namen fehlen (Newton, Einstein oder Oppenheimer)");
+        if (text.length < 50) errors.push("Statement ist zu kurz.");
+
+        if(errors.length === 0) {
+            errBox.style.display = 'none';
+            showSlide(9);
+        } else {
+            errBox.innerHTML = "ABLEHNUNG! GRÜNDE:<br><ul style='margin-top: 5px; margin-bottom: 0; padding-left: 20px;'><li>" + errors.join("</li><li>") + "</li></ul>";
+            errBox.style.display = 'block';
+            errBox.scrollIntoView({behavior: "smooth", block: "nearest"});
+        }
+    }
+
+    function validateL3M() {
+        const quote = document.getElementById('quoteM').value.trim();
+        const reason = document.getElementById('reasonM').value.trim();
+        if (quote.length > 5 && reason.length > 10) {
+            document.getElementById('error_l3m').style.display = 'none';
+            showSlide(12);
+        } else {
+            document.getElementById('error_l3m').style.display = 'block';
+        }
+    }
+
+    function validateL3N() {
+        const quote = document.getElementById('quoteN').value.trim();
+        const reason = document.getElementById('reasonN').value.trim();
+        if (quote.length > 5 && reason.length > 10) {
+            document.getElementById('error_l3n').style.display = 'none';
+            showSlide(13);
+        } else {
+            document.getElementById('error_l3n').style.display = 'block';
+        }
+    }
+
+    function validateL3E() {
+        const quote = document.getElementById('quoteE').value.trim();
+        const reason = document.getElementById('reasonE').value.trim();
+        if (quote.length > 5 && reason.length > 10) {
+            document.getElementById('error_l3e').style.display = 'none';
+            showSlide(14);
+        } else {
+            document.getElementById('error_l3e').style.display = 'block';
+        }
+    }
+
+    function finishGame() {
+        // 1. Prüfen, ob das Abschlussurteil-Textfeld ausgefüllt ist
+        const compare = document.getElementById('finalCompare');
+        if (!compare || compare.value.trim().length < 10) {
+            alert("FEHLER: Bitte schreibe zuerst dein Abschlussurteil in das Textfeld!");
+            return;
+        }
+
+        // 2. Werte aus den Slidern lesen
+        // Wir nutzen || 0, um Fehler zu vermeiden, falls ein Slider nicht gefunden wird
+        const m = document.getElementById('sliderM') ? document.getElementById('sliderM').value : 0;
+        const n = document.getElementById('sliderN') ? document.getElementById('sliderN').value : 0;
+        const e = document.getElementById('sliderE') ? document.getElementById('sliderE').value : 0;
+        
+        // 3. Ergebnis anzeigen
+        const codeDisplay = document.getElementById('code_display');
+        if (codeDisplay) {
+            codeDisplay.innerText = `M-${m}% / N-${n}% / E-${e}%`;
+        }
+        
+        // 4. Zur letzten Slide (Slide 15) springen
+        showSlide(15);
+    }
+
+</script>
+
+</body>
+</html>
