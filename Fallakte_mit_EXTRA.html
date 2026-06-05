@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fallakte: Die Physiker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* 60er-Jahre Ermittlungsakte-Style - Optimiert für Lesbarkeit */
+        :root {
+            --paper-bg: #fdfaf2;        
+            --paper-dark: #e8dbbe;
+            --desk-bg: #2a2824;
+            --ink-black: #1a1a1a;        
+            --ink-dim: #5c584f;
+            --stamp-red: #a81c1c;      
+            --typewriter-blue: #324b6b;
+            --slide-width: 1200px;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            background-color: var(--desk-bg);
+            background-image: radial-gradient(#3a3630 1px, transparent 1px);
+            background-size: 20px 20px;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: var(--ink-black);
+        }
+
+        h1, h2, h3, h4, .typewriter, input, textarea, select, .action-btn, .tab, .step-indicator, .scale-label {
+            font-family: 'Courier New', Courier, monospace !important;
+        }
+
+        .slide-container {
+            width: 100%; max-width: var(--slide-width); height: 85vh; min-height: 700px;
+            background-color: var(--paper-bg); border-radius: 4px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8), inset 0 0 50px rgba(139,115,85,0.1);
+            display: none; flex-direction: column; overflow: hidden; 
+            border: 1px solid #b5a68d; position: relative;
+        }
+        
+        .slide-container::before {
+            content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 2px;
+            border-left: 2px solid #d4c5ab; border-right: 2px solid #d4c5ab; z-index: 1;
+        }
+
+        .slide-container.active { display: flex; animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .slide-header-area { padding: 30px 40px 10px 60px; flex-shrink: 0; border-bottom: 2px solid var(--ink-black); background-color: var(--paper-bg); z-index: 10; }
+        .slide-content-area {
+            padding: 20px 40px 40px 60px; flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column;
+            background-color: var(--paper-bg);
+        }
+
+        .slide-content-area::-webkit-scrollbar { width: 14px; }
+        .slide-content-area::-webkit-scrollbar-track { background: var(--paper-dark); border-left: 1px solid #b5a68d;}
+        .slide-content-area::-webkit-scrollbar-thumb { background: #8c8270; border: 2px solid var(--paper-dark); }
+
+        .header-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .progress-wrapper { flex-grow: 1; margin: 0 30px; height: 10px; background: transparent; border: 2px solid var(--ink-black); position: relative; }
+        .progress-fill { height: 100%; background: var(--typewriter-blue); width: 5%; transition: width 0.5s ease; }
+        .step-indicator { font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
+
+        h1, h2, h3, h4 { margin: 0; font-weight: bold; line-height: 1.2; text-transform: uppercase; }
+        h1 { font-size: 45px; letter-spacing: -1px; text-align: center; margin-bottom: 20px; border: 4px solid var(--ink-black); padding: 10px; display: inline-block; }
+        .slide-title { font-size: 30px; margin-bottom: 15px; }
+        p, li { font-size: 18px; color: var(--ink-black); margin-top: 0; line-height: 1.6; }
+        
+        .secret-stamp {
+            color: var(--stamp-red); border: 4px solid var(--stamp-red); transform: rotate(-5deg); padding: 5px 15px;
+            font-size: 24px; font-weight: bold; display: inline-block; margin-bottom: 20px; letter-spacing: 3px; font-family: 'Courier New';
+        }
+
+        .content-flex { display: flex; gap: 40px; width: 100%; flex-wrap: wrap; }
+        .flex-1 { flex: 1; min-width: 300px; display: flex; flex-direction: column;}
+        
+        .tile { background: #faf5eb; border: 1px solid #b5a68d; padding: 20px; flex: 1; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); position: relative; transition: 0.3s;}
+        .info-panel { background: rgba(0,0,0,0.04); padding: 20px; border: 2px dashed var(--ink-dim); margin-bottom: 20px; }
+        
+        .help-card { display: none; background: #fffcf5; border: 1px solid var(--typewriter-blue); padding: 20px; margin-top: 15px; box-shadow: 3px 3px 0 var(--typewriter-blue); }
+        .help-card h4 { color: var(--typewriter-blue); margin-bottom: 15px; font-size: 18px; border-bottom: 1px solid var(--typewriter-blue); padding-bottom: 5px;}
+        .help-btn { background: transparent; border: 2px solid var(--ink-black); color: var(--ink-black); padding: 8px 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.2s; box-shadow: 2px 2px 0 var(--ink-black); margin-bottom: 10px; font-family: 'Courier New';}
+        .help-btn:hover { background: var(--ink-black); color: var(--paper-bg); transform: translate(2px, 2px); box-shadow: 0 0 0 var(--ink-black); }
+
+        input[type="text"], textarea, select {
+            width: 100%; padding: 10px 15px; background: rgba(255,255,255,0.5); 
+            border: 1px solid var(--ink-dim); border-bottom: 3px solid var(--ink-black);
+            color: var(--typewriter-blue); font-size: 18px; 
+            margin-top: 5px; margin-bottom: 20px; resize: vertical; transition: 0.2s;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-bottom: 3px solid var(--stamp-red); background: #fff; }
+        ::placeholder { color: #888; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        
+        label { font-weight: bold; font-family: 'Courier New'; font-size: 16px; color: var(--ink-black); }
+
+        .btn-group { display: flex; gap: 15px; margin-top: auto; padding-top: 20px; }
+        .action-btn {
+            background-color: var(--ink-black); color: var(--paper-bg); border: none; padding: 16px 24px; 
+            font-weight: bold; font-size: 18px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; flex: 1; text-align: center; border: 2px solid var(--ink-black); transition: 0.2s;
+        }
+        .action-btn:hover { background-color: var(--typewriter-blue); border-color: var(--typewriter-blue); }
+        .btn-secondary { background-color: transparent; color: var(--ink-black); }
+        .btn-secondary:hover { background-color: var(--paper-dark); color: var(--ink-black); border-color: var(--ink-black);}
+
+        .error-message { 
+            color: var(--stamp-red); font-weight: bold; font-size: 16px; margin-top: 15px; padding: 15px; 
+            border: 3px solid var(--stamp-red); display: none; text-transform: uppercase; letter-spacing: 1px; font-family: 'Courier New';
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><text x="10" y="50" font-family="Courier" font-size="20" fill="rgba(168,28,28,0.1)" transform="rotate(-20)">ABLEHNUNG</text></svg>');
+        }
+
+        .highlight { font-weight: bold; background: rgba(0,0,0,0.1); padding: 2px 5px; font-family: 'Courier New'; }
+
+        .dossier-details { background: #fffcf5; border: 2px solid var(--ink-black); margin-bottom: 15px; box-shadow: 4px 4px 0 rgba(0,0,0,0.1); }
+        .dossier-details summary { padding: 15px; font-weight: bold; font-size: 20px; cursor: pointer; background: var(--paper-dark); border-bottom: 1px solid transparent; text-transform: uppercase; font-family: 'Courier New';}
+        .dossier-details[open] summary { border-bottom: 2px solid var(--ink-black); }
+        .dossier-details .dossier-content { padding: 25px; line-height: 1.6; }
+        .dossier-details .dossier-content ul { margin-top: 10px; margin-bottom: 20px; padding-left: 25px; }
+        .dossier-details .dossier-content li { margin-bottom: 8px; }
+
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 3px solid var(--ink-black); padding-left: 10px;}
+        .tab { background: var(--paper-dark); padding: 12px 20px; cursor: pointer; border: 2px solid var(--ink-black); border-bottom: none; border-radius: 5px 5px 0 0; font-weight: bold; margin-right: 5px; text-transform: uppercase; font-size: 16px;}
+        .tab.active-tab { background: var(--paper-bg); border-bottom: 3px solid var(--paper-bg); margin-bottom: -3px; color: var(--stamp-red);}
+        .tab-content { display: none; }
+        .active-content { display: block; }
+
+        /* DRAG & DROP STYLES */
+        .quote-presenter { 
+            background: #fffcf5; border: 3px dashed var(--ink-black); padding: 25px; 
+            margin-bottom: 30px; text-align: center; min-height: 160px; display: flex; flex-direction: column; justify-content: center;
+        }
+        
+        .drag-quote-card {
+            background: #fff;
+            border: 2px solid var(--typewriter-blue);
+            padding: 15px 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--typewriter-blue);
+            cursor: grab;
+            box-shadow: 4px 4px 0 rgba(50, 75, 107, 0.2);
+            margin: 0 auto;
+            max-width: 90%;
+            transition: transform 0.1s;
+            border-left: 8px solid var(--typewriter-blue);
+            user-select: none;
+        }
+        .drag-quote-card:active { cursor: grabbing; transform: scale(0.98); }
+        
+        .drop-zones-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; align-items: start; }
+        .drop-zone { background: var(--paper-dark); border: 2px solid var(--ink-black); padding: 15px; min-height: 250px; display: flex; flex-direction: column; gap: 10px; transition: background 0.15s, border-style 0.15s; box-shadow: 3px 3px 0 rgba(0,0,0,0.1);}
+        .drop-zone.drag-over { background: #d4c5ab; border-style: dashed; }
+        .drop-zone-title { font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 2px solid var(--ink-black); padding-bottom: 10px; margin-bottom: 10px; font-size: 18px; pointer-events: none; font-family: 'Courier New';}
+        
+        .assigned-quote { background: #fffcf5; border: 1px solid var(--ink-black); padding: 10px; font-size: 14px; cursor: grab; border-left: 5px solid var(--ink-dim); transition: 0.2s; user-select: none;}
+        .assigned-quote:hover { background: #e0d8c3; border-left-color: var(--ink-black); }
+        .assigned-quote:active { cursor: grabbing; }
+        .assigned-quote.dragging { opacity: 0.4; }
+        .assigned-quote.correct-anim { border-left-color: #28a745 !important; background: #eaffe8; }
+        .assigned-quote.wrong-anim { border-left-color: var(--stamp-red) !important; background: #ffeaea; }
+
+        /* SCHIEBEREGLER */
+        .slider-container { display: flex; align-items: center; gap: 20px; margin: 30px 0 20px 0; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]:focus { outline: none; border: none; background: transparent; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 12px; cursor: pointer; background: var(--ink-black); border-radius: 6px; border: 1px solid #000; }
+        input[type=range]::-webkit-slider-thumb { border: 3px solid var(--ink-black); height: 34px; width: 34px; border-radius: 50%; background: var(--stamp-red); cursor: pointer; -webkit-appearance: none; margin-top: -12px; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+        input[type=range]:focus::-webkit-slider-runnable-track { background: var(--ink-dim); }
+        .slider-output { text-align: center; font-size: 28px; font-weight: bold; color: var(--stamp-red); margin-bottom: 30px; font-family: 'Courier New'; border: 2px dashed var(--stamp-red); padding: 10px; display: inline-block; min-width: 150px;}
+
+        /* L2 NEU – Kontext-Karten & Zonen */
+        .l2n-drop-zone {
+            background: var(--paper-dark); border: 2px solid var(--ink-black);
+            padding: 12px; min-height: 200px; display: flex; flex-direction: column;
+            gap: 8px; transition: background 0.15s, border-style 0.15s;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+        }
+        .l2n-drop-zone.drag-over { background: #d4c5ab; border-style: dashed; }
+
+        .l2n-context-card {
+            background: #fff; border: 2px solid var(--typewriter-blue);
+            border-left: 5px solid var(--typewriter-blue);
+            padding: 7px 10px; font-size: 12px; font-weight: bold;
+            color: var(--typewriter-blue); cursor: grab; user-select: none;
+            max-width: 280px; line-height: 1.4;
+            box-shadow: 2px 2px 0 rgba(50,75,107,0.15); transition: transform 0.1s;
+        }
+        .l2n-context-card:active { cursor: grabbing; }
+        .l2n-context-card.dragging { opacity: 0.4; }
+        .l2n-context-card[data-dossier="A"] { border-left-color: #6b4226; color: #6b4226; border-color: #6b4226; }
+        .l2n-context-card[data-dossier="B"] { border-left-color: var(--typewriter-blue); color: var(--typewriter-blue); }
+        .l2n-context-card[data-dossier="C"] { border-left-color: var(--stamp-red); color: var(--stamp-red); border-color: var(--stamp-red); }
+
+        .l2n-placed-card {
+            background: #fffcf5; border: 1px solid var(--ink-black);
+            border-left: 4px solid var(--ink-dim);
+            padding: 6px 8px; font-size: 11px; cursor: grab; user-select: none;
+            line-height: 1.4; transition: 0.2s;
+        }
+        .l2n-placed-card:hover { background: #e0d8c3; }
+        .l2n-placed-card:active { cursor: grabbing; }
+        .l2n-placed-card.dragging { opacity: 0.4; }
+        .l2n-placed-card[data-dossier="A"] { border-left-color: #6b4226; }
+        .l2n-placed-card[data-dossier="B"] { border-left-color: var(--typewriter-blue); }
+        .l2n-placed-card[data-dossier="C"] { border-left-color: var(--stamp-red); }
+
+    </style>
+</head>
+<body>
+
+<div class="slide-container active" id="slide1">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Akte: Eröffnet</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 5%"></div></div>
+            <div class="step-indicator">CSI Les Cerisiers</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="justify-content: center; align-items: center; text-align: center;">
+        <div class="secret-stamp">STRENG GEHEIM</div>
+        <h1>ERMITTLUNGSAKTE:<br>DIE PHYSIKER</h1>
+        <p style="max-width: 800px; margin: 0 auto 40px auto; font-size: 22px; font-weight: bold;">
+            Inspektor Voß kennt die Täter.<br>Aber die Motive hinter den Morden sind unklar.<br><br>
+            Ihr seid das Ermittlungsteam CSI Les Cerisiers.
+        </p>
+        <div style="width: 300px;">
+            <button class="action-btn" onclick="showSlide(2)">Akte aufschlagen</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide2">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 1 // Mission</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 10%"></div></div>
+            <div class="step-indicator">Motivanalyse</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="justify-content: center; align-items: center; text-align: center; background-color: var(--ink-black); color: var(--paper-bg);">
+        <h2 style="font-size: 70px; margin-bottom: 20px; color: var(--paper-bg);">LEVEL 1</h2>
+        <p style="font-size: 32px; color: var(--stamp-red); font-weight: bold; letter-spacing: 5px;" class="typewriter">DIE MORDMOTIVE</p>
+        <hr style="width: 100px; border: 2px solid var(--paper-bg); margin: 30px auto;">
+        <p style="max-width: 600px; margin: 0 auto; color: #fff; font-size: 20px;">Findet heraus, warum Newton, Einstein und Möbius ihre Krankenschwestern töten. Nur mit korrekten Motiven öffnet sich der Tresor.</p>
+        <div class="btn-group" style="max-width: 400px; width: 100%; margin-top: 40px;">
+            <button class="action-btn btn-secondary" style="color: var(--paper-bg); border-color: var(--paper-bg);" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" style="background: var(--stamp-red); border-color: var(--stamp-red);" onclick="showSlide(3)">Zu den Profiler-Akten</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide3">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 1 // Profiler-Akten</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 20%"></div></div>
+            <div class="step-indicator">Beweisaufnahme</div>
+        </div>
+        <h2 class="slide-title">PROFILER-ARBEIT (AFB I & II)</h2>
+        <p style="font-size: 18px;">1. Textstelle lesen. 2. Fragen beantworten. <strong style="color: var(--stamp-red);">3. Jede Antwort mit Zitat UND Seitenzahl (S. oder Seite) belegen!</strong> 4. Hauptmotiv formulieren.</p>
+        
+        <div class="tabs" style="margin-top: 20px;">
+            <div class="tab active-tab" onclick="switchTab('newton')">Akte: Newton</div>
+            <div class="tab" onclick="switchTab('einstein')">Akte: Einstein</div>
+            <div class="tab" onclick="switchTab('moebius')">Akte: Möbius</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="padding-top: 0;">
+        
+        <div id="newton" class="tab-content active-content">
+            <div class="info-panel">
+                <span class="highlight">Leseauftrag: S. 62–64 & S. 68–72</span> (Gespräch der Physiker)
+                <button class="help-btn" onclick="toggleHelp('help_newton')" style="float: right; margin-top: -5px;"><i class="fa-solid fa-folder-open"></i> Hilfe</button>
+                <div class="help-card" id="help_newton">
+                    <h4>Hinweise Newton</h4>
+                    <p><strong>Warum im Sanatorium?</strong> S. 62: "Sie haben sich hier eingeschlichen?"<br>
+                    <strong>Rechtfertigung?</strong> S. 63: "Meine Mission..."<br>
+                    <strong>Wahres Ziel/Arbeitgeber?</strong> S. 68: "Doch ich bin nicht damit zufrieden..." & S. 70 "Warum nicht..."</p>
+                </div>
+            </div>
+            <label>1) Warum ist Newton im Sanatorium „Les Cerisiers"?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>2) Wie rechtfertigt Newton den Mord?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>3) Für wen arbeitet Newton?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>4) Was möchte Newton mit den Erkenntnissen von Möbius machen?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <div style="background: rgba(168,28,28,0.05); padding: 15px; border: 2px solid var(--stamp-red); margin-top: 15px;">
+                <label style="color: var(--stamp-red);">Hauptmotiv Newton (1 Satz):</label>
+                <input type="text" style="border-bottom-color: var(--stamp-red); color: var(--ink-black);" placeholder="Das primäre Motiv ist...">
+            </div>
+        </div>
+
+        <div id="einstein" class="tab-content">
+            <div class="info-panel">
+                <span class="highlight">Leseauftrag: S. 64–66 & S. 69–73</span>
+                <button class="help-btn" onclick="toggleHelp('help_einstein')" style="float: right; margin-top: -5px;"><i class="fa-solid fa-folder-open"></i> Hilfe</button>
+                <div class="help-card" id="help_einstein">
+                    <h4>Hinweise Einstein</h4>
+                    <p><strong>Warum im Sanatorium?</strong> S. 64: "Sie waren nicht der einzige Leser..."<br>
+                    <strong>Rechtfertigung?</strong> S. 65: "Überhaupt ging vieles schief..." / "Befehl ist Befehl."<br>
+                    <strong>Arbeitgeber?</strong> S. 69: "Wie soll ich es denn sonst sagen?" & S. 70 "Mir ist bloß mein..."</p>
+                </div>
+            </div>
+            <label>1) Warum ist Einstein im Sanatorium „Les Cerisiers"?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>2) Wie rechtfertigt Einstein den Mord?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>3) Für wen arbeitet Einstein?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>4) Was möchte Einstein mit den Erkenntnissen von Möbius machen?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <div style="background: rgba(168,28,28,0.05); padding: 15px; border: 2px solid var(--stamp-red); margin-top: 15px;">
+                <label style="color: var(--stamp-red);">Hauptmotiv Einstein (1 Satz):</label>
+                <input type="text" style="border-bottom-color: var(--stamp-red); color: var(--ink-black);" placeholder="Das primäre Motiv ist...">
+            </div>
+        </div>
+
+        <div id="moebius" class="tab-content">
+            <div class="info-panel">
+                <span class="highlight">Leseauftrag: S. 72–76</span>
+                <button class="help-btn" onclick="toggleHelp('help_moebius')" style="float: right; margin-top: -5px;"><i class="fa-solid fa-folder-open"></i> Hilfe</button>
+                <div class="help-card" id="help_moebius">
+                    <h4>Hinweise Möbius</h4>
+                    <p><strong>Warum im Sanatorium?</strong> S. 73: "Jeder preist mir eine andere Theorie an..." / "Es gibt Risiken, die man nicht eingehen darf."<br>
+                    <strong>Rechtfertigung?</strong> S. 75: "Wer tötet, ist ein Mörder..."<br>
+                    <strong>Reaktion auf andere?</strong> S. 73: "Sind wenigstens Ihre Physiker frei?" & S. 76: "Wir sind wilde Tiere..."</p>
+                </div>
+            </div>
+            <label>1) Warum ist Möbius im Sanatorium „Les Cerisiers"?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>2) Wie rechtfertigt Möbius den Mord?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>3) Einstein und Newton arbeiten für Geheimdienste. Für wen arbeitet Möbius?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <label>4) Wie reagiert Möbius auf die Versuche, ihn zu gewinnen?</label>
+            <input type="text" class="page-validation" placeholder="Antwort & Beleg (inkl. S. / Seite)...">
+            <div style="background: rgba(168,28,28,0.05); padding: 15px; border: 2px solid var(--stamp-red); margin-top: 15px;">
+                <label style="color: var(--stamp-red);">Hauptmotiv Möbius (1 Satz):</label>
+                <input type="text" style="border-bottom-color: var(--stamp-red); color: var(--ink-black);" placeholder="Das primäre Motiv ist...">
+            </div>
+        </div>
+
+        <div id="error_profiler" class="error-message">FEHLER: MINDESTENS EIN FELD WURDE NICHT KORREKT MIT EINER SEITENZAHL BELEGT (S. ... ODER SEITE ... MUSS ENTHALTEN SEIN).</div>
+
+        <div class="btn-group" style="margin-top: 30px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="validateProfilerAkten()">Beweisaufnahme abschließen (Zum Tresor)</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide4">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 1 // Abschluss</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 30%"></div></div>
+            <div class="step-indicator">Motivcode</div>
+        </div>
+        <h2 class="slide-title">TRESOR 1: MOTIVCODE</h2>
+    </div>
+    <div class="slide-content-area" style="align-items: center;">
+        <div class="tile" style="max-width: 800px; width: 100%; text-align: center; margin-top: 20px;">
+            <p style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Welches Hauptmotiv treibt die Täter an? Findet den 3-stelligen Buchstaben-Code.</p>
+            
+            <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap;">
+                <div style="border: 2px solid var(--ink-black); padding: 10px; width: 180px; font-family: 'Courier New';"><strong>G</strong> = Geheimauftrag</div>
+                <div style="border: 2px solid var(--ink-black); padding: 10px; width: 180px; font-family: 'Courier New';"><strong>E</strong> = Ehrgeiz</div>
+                <div style="border: 2px solid var(--ink-black); padding: 10px; width: 180px; font-family: 'Courier New';"><strong>T</strong> = Tarnung</div>
+                <div style="border: 2px solid var(--ink-black); padding: 10px; width: 180px; font-family: 'Courier New';"><strong>H</strong> = Höherer Zweck</div>
+                <div style="border: 2px solid var(--ink-black); padding: 10px; width: 180px; font-family: 'Courier New';"><strong>D</strong> = Druck</div>
+            </div>
+            <p style="font-size: 22px; margin-bottom: 10px; background: var(--paper-dark); display: inline-block; padding: 5px 15px; border: 1px solid var(--ink-black);" class="typewriter">Reihenfolge: <strong>Newton — Einstein — Möbius</strong></p>
+            
+            <input type="text" id="input_code1" placeholder="z.B. GTH" style="text-align: center; font-size: 40px; width: 100%; max-width: 400px; letter-spacing: 5px; margin: 20px auto; display: block; border-bottom: 3px dashed var(--ink-black);">
+            
+            <div id="error1" class="error-message">FALSCHER CODE. AKTEN ERNEUT PRÜFEN.</div>
+            
+            <div class="btn-group" style="max-width: 400px; margin: 30px auto 0 auto;">
+                <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+                <button class="action-btn" onclick="validateCode1()">Tresor öffnen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide5">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 2 // Ethik</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 40%"></div></div>
+            <div class="step-indicator">Verantwortung</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="justify-content: center; align-items: center; text-align: center;">
+        <h2 style="font-size: 70px; margin-bottom: 20px;">LEVEL 2</h2>
+        <p style="font-size: 32px; font-weight: bold; letter-spacing: 2px;" class="typewriter">DAS LABOR DER ETHIK</p>
+        <hr style="width: 100px; border: 2px solid var(--ink-black); margin: 30px auto;">
+        <div class="info-panel" style="max-width: 700px; text-align: left; font-size: 20px;">
+            Im ersten Level habt ihr die Mordmotive der Physiker untersucht. Jetzt betretet ihr das Labor der Ethik.<br><br>
+            Hier geht es um eine andere Frage: <strong>Wie denken Wissenschaftler über Verantwortung?</strong><br><br>
+            Eure Aufgabe:<br>
+            1. Drei Denkrichtungen zur Wissenschaft verstehen.<br>
+            2. Zitate diesen Denkrichtungen zuordnen.<br>
+            3. Ein Statement der Ethikkommission schreiben.
+        </div>
+        <div class="btn-group" style="max-width: 400px; width: 100%; margin-top: 20px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="showSlide(6)">Zu den Denkschulen</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide6">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Labor // Wissen</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 50%"></div></div>
+            <div class="step-indicator">Denkschulen</div>
+        </div>
+        <h2 class="slide-title">WISSENSCHAFTLICHE DENKSCHULEN</h2>
+    </div>
+    <div class="slide-content-area">
+        <p style="font-weight: bold; margin-bottom: 20px; font-size: 20px;">Klicke auf die Akten, um die vollständigen Informationstexte der Denkschulen zu lesen.</p>
+        
+        <details class="dossier-details">
+            <summary>Akte 1: Fortschrittsoptimismus <i class="fa-solid fa-chevron-down" style="float:right;"></i></summary>
+            <div class="dossier-content">
+                <p><strong>Denkschule 1: Fortschrittsoptimismus</strong></p>
+                <p>In der Denkschule des Fortschrittsoptimismus steht der <strong>Glaube an den Fortschritt</strong> der Wissenschaft im Zentrum. Wissenschaft wird hier vor allem als Motor verstanden, der die Welt voranbringt: Je mehr Menschen erforschen, messen und berechnen, desto besser können sie die Natur verstehen und Probleme lösen.</p>
+                <p>Neue Entdeckungen und Theorien gelten grundsätzlich als etwas Positives. Sie zeigen, dass der Mensch „weiter sehen" kann als frühere Generationen. Typisch ist die Vorstellung, dass jede Generation auf dem aufbaut, was die vorherigen erarbeitet haben, und dadurch <em>„auf den Schultern von Riesen"</em> steht.</p>
+                <p>Wissenschaftliche Erkenntnisse werden daher in dieser Denkschule als wertvoller Gewinn gesehen – <strong>unabhängig davon, wie sie später verwendet werden</strong>. Die Rolle der Wissenschaftlerinnen und Wissenschaftler besteht vor allem darin:</p>
+                <ul>
+                    <li>Naturgesetze zu entdecken</li>
+                    <li>Zusammenhänge zu erklären</li>
+                    <li>Wissen zu sammeln</li>
+                </ul>
+                <p>Ob dieses Wissen später für friedliche oder zerstörerische Zwecke genutzt wird, wird nicht als Hauptaufgabe der Forschenden gesehen, sondern eher als Thema für Politik, Militär oder Gesellschaft. Ethik und Verantwortung kommen zwar vor, stehen aber im Hintergrund. Die wichtige Botschaft lautet: <strong>Mehr Erkenntnis erweitert unsere Möglichkeiten und ist erst einmal gut.</strong></p>
+                <div style="background: rgba(0,0,0,0.05); padding: 15px; border-left: 5px solid var(--typewriter-blue); margin-top: 20px;">
+                    <strong>Woran erkennst du diese Denkschule?</strong><br>
+                    An Zitaten, die Fortschritt, Erkenntnisgewinn und das Weitertragen von Wissen betonen. Formulierungen wie <em>„weiter sehen"</em>, <em>„auf Riesen stehen"</em>, <em>„Entdeckungen"</em> oder <em>„Naturgesetze"</em> passen typischerweise hierher.
+                </div>
+            </div>
+        </details>
+        
+        <details class="dossier-details">
+            <summary>Akte 2: Verantwortungsethik <i class="fa-solid fa-chevron-down" style="float:right;"></i></summary>
+            <div class="dossier-content">
+                <p><strong>Denkschule 2: Verantwortungsethik der Wissenschaft</strong></p>
+                <p>Die Denkschule der Verantwortungsethik geht von einer einfachen Beobachtung aus: <strong>Wissenschaft ist nicht neutral</strong>, weil ihre Ergebnisse die Welt tiefgreifend verändern. Neue Technologien, etwa Atomenergie, Überwachungstechnik oder digitale Systeme, können enormen Nutzen bringen, aber auch großen Schaden.</p>
+                <p>Deshalb kann wissenschaftliche Arbeit nicht nur als „reine Erkenntnissuche" betrachtet werden. In dieser Sicht haben Forscherinnen und Forscher eine <strong>besondere Verantwortung</strong> für die Folgen ihrer Entdeckungen.</p>
+                <ul>
+                    <li>Was passiert, wenn unsere Entdeckung in falsche Hände gerät?</li>
+                    <li>Welche Risiken entstehen für Menschen, Umwelt oder Frieden?</li>
+                    <li>Kann die Forschung missbraucht werden, und wenn ja, wie können wir das verhindern oder begrenzen?</li>
+                </ul>
+                <div style="background: rgba(0,0,0,0.05); padding: 15px; border-left: 5px solid var(--typewriter-blue); margin-top: 20px;">
+                    <strong>Woran erkennst du diese Denkschule?</strong><br>
+                    Typische Kennzeichen sind Begriffe wie <em>Verantwortung, Folgen, Konsequenzen, Grenzen, Risiken, Kontrolle</em> oder <em>Vorsicht</em>.
+                </div>
+            </div>
+        </details>
+        
+        <details class="dossier-details">
+            <summary>Akte 3: Gewissensdilemma <i class="fa-solid fa-chevron-down" style="float:right;"></i></summary>
+            <div class="dossier-content">
+                <p><strong>Denkschule 3: Gewissensdilemma der Wissenschaft</strong></p>
+                <p>Die Denkschule des Gewissensdilemmas rückt die <strong>innere Zerrissenheit</strong> von Wissenschaftlerinnen und Wissenschaftlern in den Mittelpunkt. Hier steht nicht der Fortschritt im Vordergrund und auch nicht allein die Forderung nach Grenzen, sondern die Frage: <em>Was macht es mit einem Menschen, wenn seine Entdeckung zu zerstörerischen Folgen führt?</em></p>
+                <p>Die Person fühlt sich dann vielleicht schuldig, spricht von <strong>„Sünde"</strong>, von <strong>„Zerstörung"</strong> oder davon, dass sie zum <strong>„Tod"</strong> oder zum „Zerstörer der Welten" geworden sei. Auch Sätze wie <em>„Wer tötet, ist ein Mörder"</em> gehören in diese Sphäre.</p>
+                <div style="background: rgba(0,0,0,0.05); padding: 15px; border-left: 5px solid var(--typewriter-blue); margin-top: 20px;">
+                    <strong>Woran erkennst du diese Denkschule?</strong><br>
+                    An Zitaten, in denen Wörter wie <em>Sünde, Schuld, Mörder, Tod, Zerstörung, Reue, Gewissen</em> vorkommen.
+                </div>
+            </div>
+        </details>
+        
+        <div class="info-panel" style="margin-top: 30px;">
+            <label style="display: block; margin-bottom: 10px;">Aufgabe 1: Beschreibe jede Denkschule in 1-2 Sätzen und benenne je zwei Stichwörter.</label>
+            <textarea id="l2_task1" placeholder="A) ... B) ... C) ..." style="min-height: 100px; margin-bottom: 0;"></textarea>
+            <div id="error_l2t1" class="error-message">EINTRAG ZU KURZ. BITTE GENAUER BESCHREIBEN.</div>
+            <div class="btn-group" style="max-width: 400px; margin: 20px 0 0 0;">
+                <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+                <button class="action-btn" onclick="validateL2Task1()">Akte schließen & Weiter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide7">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Labor // Analyse</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 60%"></div></div>
+            <div class="step-indicator">Zitat-Dossier</div>
+        </div>
+        <h2 class="slide-title">INTERAKTIVES DOSSIER (AFB I/II)</h2>
+    </div>
+    <div class="slide-content-area" style="position: relative;">
+        
+        <div class="quote-presenter">
+            <p style="font-weight: bold; color: var(--stamp-red); font-size: 16px; margin-bottom: 15px;" class="typewriter">
+                <i class="fa-solid fa-hand-pointer"></i> BEDIENUNG: Ziehe das eingerahmte Zitat in einen Ordner (A, B oder C). Abgelegte Zitate lassen sich per Drag &amp; Drop zwischen den Ordnern verschieben.
+            </p>
+            <div id="active-quote-container" style="min-height: 100px;">
+            </div>
+        </div>
+
+        <div class="drop-zones-container">
+            <div class="drop-zone" id="zoneA" data-zone="A"
+                ondragover="allowDrop(event)"
+                ondragenter="dragEnterZone(event)"
+                ondragleave="dragLeaveZone(event)"
+                ondrop="dropToZone(event, 'A')">
+                <div class="drop-zone-title">A) Fortschrittsoptimismus</div>
+            </div>
+            <div class="drop-zone" id="zoneB" data-zone="B"
+                ondragover="allowDrop(event)"
+                ondragenter="dragEnterZone(event)"
+                ondragleave="dragLeaveZone(event)"
+                ondrop="dropToZone(event, 'B')">
+                <div class="drop-zone-title">B) Verantwortungsethik</div>
+            </div>
+            <div class="drop-zone" id="zoneC" data-zone="C"
+                ondragover="allowDrop(event)"
+                ondragenter="dragEnterZone(event)"
+                ondragleave="dragLeaveZone(event)"
+                ondrop="dropToZone(event, 'C')">
+                <div class="drop-zone-title">C) Gewissensdilemma</div>
+            </div>
+        </div>
+        
+        <div class="info-panel" style="margin-top: 30px;">
+            <label style="display: block; margin-bottom: 10px;">Aufgabe 2: Begründe zwei Zuordnungen in je einem Satz:</label>
+            <textarea id="l2_task2" placeholder="Begründung 1: ... &#10;Begründung 2: ..." style="min-height: 80px;"></textarea>
+            <div id="error_l2t2" class="error-message"></div>
+            <div class="btn-group" style="max-width: 400px; margin-top: 15px;">
+                <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+                <button class="action-btn" onclick="validateL2Task2()">Dossier überprüfen</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide8">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Labor // Urteil</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 70%"></div></div>
+            <div class="step-indicator">Ethik-Statement</div>
+        </div>
+        <h2 class="slide-title">STATEMENT DER ETHIKKOMMISSION</h2>
+    </div>
+    <div class="slide-content-area">
+        <div class="content-flex">
+            <div class="flex-1">
+                <div class="info-panel" style="border: 2px solid var(--ink-black);">
+                    <h3 style="margin-bottom: 10px;">Aufgabe 3</h3>
+                    <p style="font-size: 16px; margin-bottom: 0;">Schreibe ein Statement (3-4 Sätze). <br><strong>Bedingungen:</strong><br>- Bezug auf mind. 2 Denkschulen <br>- Mind. 3 Begriffe nutzen: <strong>Verantwortung, Konsequenzen, Grenzen</strong></p>
+                </div>
+                <textarea id="ethics_statement" placeholder="Hier tippen..." style="flex-grow: 1; min-height: 200px;"></textarea>
+                <div id="error_l2t3" class="error-message"></div>
+                <div class="btn-group" style="margin-top: 10px;">
+                    <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+                    <button class="action-btn" onclick="validateL2Task3()">Prüfen & Freigeben</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide9">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Urteil</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 75%"></div></div>
+            <div class="step-indicator">Schuldwaagen</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="justify-content: center; align-items: center; text-align: center; background-color: var(--ink-black); color: var(--paper-bg);">
+        <h2 style="font-size: 70px; color: var(--paper-bg); margin-bottom: 20px;">LEVEL 3</h2>
+        <p style="font-size: 32px; font-weight: bold; letter-spacing: 2px; color: var(--stamp-red);" class="typewriter">SCHULDWAAGEN & POSITIONSLINIE</p>
+        <hr style="width: 100px; border: 2px solid var(--paper-bg); margin: 30px auto;">
+        <p style="max-width: 600px; margin: 0 auto; color: #fff; font-size: 20px;">Der Beweisraum ist offen. Bestimmt nun anhand der Taten und Reaktionen die endgültige Schuld der Physiker auf einer prozentualen Skala.</p>
+        <div class="btn-group" style="max-width: 400px; width: 100%; margin-top: 40px;">
+            <button class="action-btn btn-secondary" style="color: var(--paper-bg); border-color: var(--paper-bg);" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" style="background: var(--stamp-red); border-color: var(--stamp-red);" onclick="showSlide(10)">Beweisraum betreten</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide10">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Beweisraum</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 80%"></div></div>
+            <div class="step-indicator">Tat & Reaktion</div>
+        </div>
+        <h2 class="slide-title">TAT, REAKTION UND SCHULD</h2>
+    </div>
+    <div class="slide-content-area">
+        <div class="info-panel">
+            <h3 class="highlight">Arbeitsauftrag – Inputphase</h3>
+            <p style="margin-top: 10px;">Lies die folgenden Textausschnitte aufmerksam.<br>
+            Beschreibe, wie die jeweilige Tat abläuft. Erläutere, wie die Figur nach der Tat darüber spricht oder reagiert.<br>
+            Nutze diese Informationen gleich für dein Urteil auf der Positionslinie.</p>
+        </div>
+        
+        <div class="content-flex" style="gap: 20px;">
+            <div class="tile" id="tileM" style="display: flex; flex-direction: column; transition: 0.3s;">
+                <h3 style="border-bottom: 2px solid var(--ink-black); margin-bottom: 15px; padding-bottom: 5px;">Möbius</h3>
+                <p>Möbius erdrosselt Schwester Monika Stettler im Sanatorium. Kurz zuvor hat sie ihm ihre Liebe gestanden und ist bereit, ihm zu folgen. Möbius tötet sie dennoch, obwohl sie ihm vertraut.</p>
+                <p>Nach der Tat spricht Möbius offen über das Geschehen und sagt:<br><strong>„Wer tötet, ist ein Mörder, und wir haben getötet."</strong></p>
+                <button id="btnM" class="action-btn btn-secondary" style="margin-top: auto; flex: none; border: 2px solid var(--ink-black); min-height: 85px; display: flex; align-items: center; justify-content: center;" onclick="showSlide(11)">Positionslinie beurteilen</button>
+            </div>
+            
+            <div class="tile" id="tileN" style="display: flex; flex-direction: column; transition: 0.3s;">
+                <h3 style="border-bottom: 2px solid var(--ink-black); margin-bottom: 15px; padding-bottom: 5px;">Newton</h3>
+                <p>Newton erdrosselt Schwester Dorothea Moser. Er handelt gezielt und ohne sichtbares Zögern.</p>
+                <p>Nach der Tat verweist Newton auf seinen Auftrag und erklärt:<br><strong>„Befehl ist Befehl."</strong></p>
+                <button id="btnN" class="action-btn btn-secondary" style="margin-top: auto; flex: none; border: 2px solid var(--ink-black); min-height: 85px; display: flex; align-items: center; justify-content: center;" onclick="showSlide(12)">Positionslinie beurteilen</button>
+            </div>
+            
+            <div class="tile" id="tileE" style="display: flex; flex-direction: column; transition: 0.3s;">
+                <h3 style="border-bottom: 2px solid var(--ink-black); margin-bottom: 15px; padding-bottom: 5px;">Einstein</h3>
+                <p>Einstein erdrosselt Schwester Irene Straub. Er akzeptiert den Tod als Teil seines Vorgehens.</p>
+                <p>Nach der Tat erklärt er sein Handeln mit den Worten:<br><strong>„Gewisse Risiken muss man schließlich eingehen."</strong></p>
+                <button id="btnE" class="action-btn btn-secondary" style="margin-top: auto; flex: none; border: 2px solid var(--ink-black); min-height: 85px; display: flex; align-items: center; justify-content: center;" onclick="showSlide(13)">Positionslinie beurteilen</button>
+            </div>
+        </div>
+        
+        <div class="btn-group" style="margin-top: 30px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="showSlide(14)">Weiter zum Abschlussurteil</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide11">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Urteil</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 84%"></div></div>
+            <div class="step-indicator">Möbius</div>
+        </div>
+        <h2 class="slide-title">POSITIONSLINIE – MÖBIUS</h2>
+    </div>
+    <div class="slide-content-area">
+        <div class="slider-container">
+            <span class="scale-label" style="text-align: right;">UNSCHULDIG<br>0%</span>
+            <input type="range" id="sliderM" min="0" max="100" value="50" oninput="document.getElementById('valM').innerText = this.value + '%'">
+            <span class="scale-label">SCHULDIG<br>100%</span>
+        </div>
+        <div style="text-align: center;"><div class="slider-output" id="valM">50%</div></div>
+        <div class="info-panel">
+            <h3 class="highlight">Arbeitsauftrag – Urteil Möbius</h3>
+            <p style="margin-top: 10px;">
+                <strong>Ordne ein:</strong> Setze Möbius auf der Skala (Prozente) ein.<br>
+                <strong>Belege:</strong> Nenne ein Zitat aus dem Input, das deine Entscheidung stützt.<br>
+                <strong>Beurteile:</strong> Begründe deine Entscheidung in 1–2 Sätzen.
+            </p>
+        </div>
+        <input type="text" id="quoteM" placeholder="z.B. „Wer tötet, ist ein Mörder, und wir haben getötet."" style="font-family: 'Courier New'; font-weight:bold;">
+        <textarea id="reasonM" placeholder="z.B. Möbius handelt bewusst und gesteht die Tat offen ein, deshalb stufe ich ihn als..." style="min-height: 100px; font-family: 'Courier New'; font-weight:bold;"></textarea>
+        <details style="border: 2px solid var(--stamp-red); background: rgba(168,28,28,0.05); padding: 15px; margin-top: 15px; cursor: pointer;">
+            <summary style="color: var(--stamp-red); font-weight: bold; font-family: 'Courier New'; font-size: 18px; outline: none;">
+                <i class="fa-solid fa-scale-unbalanced"></i> Hilfe: Orientierung einblenden
+            </summary>
+            <p style="margin-top: 15px; margin-bottom: 0;">
+                Vertrauensbruch + bewusste Tat → hoher Prozentwert<br>Offene Schuldeinsicht → kann entlasten (Prozentwert verringern)
+            </p>
+        </details>
+        <div id="error_l3m" class="error-message">BITTE AUSFÜLLEN: Zitat (mind. 6 Zeichen) und Begründung (mind. 15 Zeichen).</div>
+        <div class="btn-group" style="margin-top: 20px;">
+            <button class="action-btn btn-secondary" onclick="showSlide(10)">Zurück zur Übersicht</button>
+            <button class="action-btn" onclick="validateL3M()">Bestätigen</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide12">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Urteil</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 88%"></div></div>
+            <div class="step-indicator">Newton</div>
+        </div>
+        <h2 class="slide-title">POSITIONSLINIE – NEWTON</h2>
+    </div>
+    <div class="slide-content-area">
+        <div class="slider-container">
+            <span class="scale-label" style="text-align: right;">UNSCHULDIG<br>0%</span>
+            <input type="range" id="sliderN" min="0" max="100" value="50" oninput="document.getElementById('valN').innerText = this.value + '%'">
+            <span class="scale-label">SCHULDIG<br>100%</span>
+        </div>
+        <div style="text-align: center;"><div class="slider-output" id="valN">50%</div></div>
+        <div class="info-panel">
+            <h3 class="highlight">Arbeitsauftrag – Urteil Newton</h3>
+            <p style="margin-top: 10px;">
+                <strong>Ordne ein:</strong> Setze Newton auf der Skala ein.<br>
+                <strong>Belege:</strong> Nenne ein Zitat aus dem Input.<br>
+                <strong>Beurteile:</strong> Begründe deine Entscheidung in 1–2 Sätzen.
+            </p>
+        </div>
+        <input type="text" id="quoteN" placeholder="z.B. „Befehl ist Befehl."" style="font-family: 'Courier New'; font-weight:bold;">
+        <textarea id="reasonN" placeholder="z.B. Newton handelt ohne Zögern auf Befehl, deshalb stufe ich ihn als..." style="min-height: 100px; font-family: 'Courier New'; font-weight:bold;"></textarea>
+        <details style="border: 2px solid var(--stamp-red); background: rgba(168,28,28,0.05); padding: 15px; margin-top: 15px; cursor: pointer;">
+            <summary style="color: var(--stamp-red); font-weight: bold; font-family: 'Courier New'; font-size: 18px; outline: none;">
+                <i class="fa-solid fa-scale-unbalanced"></i> Hilfe: Orientierung einblenden
+            </summary>
+            <p style="margin-top: 15px; margin-bottom: 0;">
+                Gezieltes Handeln + keine Reue → hoher Prozentwert<br>Berufung auf Befehl → erklärt, entschuldigt aber nicht automatisch
+            </p>
+        </details>
+        <div id="error_l3n" class="error-message">BITTE AUSFÜLLEN: Zitat (mind. 6 Zeichen) und Begründung (mind. 15 Zeichen).</div>
+        <div class="btn-group" style="margin-top: 20px;">
+            <button class="action-btn btn-secondary" onclick="showSlide(10)">Zurück zur Übersicht</button>
+            <button class="action-btn" onclick="validateL3N()">Bestätigen</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide13">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Urteil</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 92%"></div></div>
+            <div class="step-indicator">Einstein</div>
+        </div>
+        <h2 class="slide-title">POSITIONSLINIE – EINSTEIN</h2>
+    </div>
+    <div class="slide-content-area">
+        <div class="slider-container">
+            <span class="scale-label" style="text-align: right;">UNSCHULDIG<br>0%</span>
+            <input type="range" id="sliderE" min="0" max="100" value="50" oninput="document.getElementById('valE').innerText = this.value + '%'">
+            <span class="scale-label">SCHULDIG<br>100%</span>
+        </div>
+        <div style="text-align: center;"><div class="slider-output" id="valE">50%</div></div>
+        <div class="info-panel">
+            <h3 class="highlight">Arbeitsauftrag – Urteil Einstein</h3>
+            <p style="margin-top: 10px;">
+                <strong>Ordne ein:</strong> Setze Einstein auf der Skala ein.<br>
+                <strong>Belege:</strong> Nenne ein Zitat aus dem Input.<br>
+                <strong>Beurteile:</strong> Begründe deine Entscheidung in 1–2 Sätzen.
+            </p>
+        </div>
+        <input type="text" id="quoteE" placeholder="z.B. „Gewisse Risiken muss man schließlich eingehen."" style="font-family: 'Courier New'; font-weight:bold;">
+        <textarea id="reasonE" placeholder="z.B. Einstein nimmt den Tod bewusst in Kauf, deshalb stufe ich ihn als..." style="min-height: 100px; font-family: 'Courier New'; font-weight:bold;"></textarea>
+        <details style="border: 2px solid var(--stamp-red); background: rgba(168,28,28,0.05); padding: 15px; margin-top: 15px; cursor: pointer;">
+            <summary style="color: var(--stamp-red); font-weight: bold; font-family: 'Courier New'; font-size: 18px; outline: none;">
+                <i class="fa-solid fa-scale-unbalanced"></i> Hilfe: Orientierung einblenden
+            </summary>
+            <p style="margin-top: 15px; margin-bottom: 0;">
+                Akzeptanz von „Risiken" → bewusste Inkaufnahme von Tod<br>Keine sichtbare Reue → verschärft Schuldfrage
+            </p>
+        </details>
+        <div id="error_l3e" class="error-message">BITTE AUSFÜLLEN: Zitat (mind. 6 Zeichen) und Begründung (mind. 15 Zeichen).</div>
+        <div class="btn-group" style="margin-top: 20px;">
+            <button class="action-btn btn-secondary" onclick="showSlide(10)">Zurück zur Übersicht</button>
+            <button class="action-btn" onclick="validateL3E()">Bestätigen</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide14">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 3 // Finale</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 98%"></div></div>
+            <div class="step-indicator">Urteil</div>
+        </div>
+        <h2 class="slide-title">ABSCHLUSSURTEIL</h2>
+    </div>
+    <div class="slide-content-area">
+        <div class="info-panel" style="border: 2px solid var(--ink-black);">
+            <h3 class="highlight">Arbeitsauftrag – Vergleich</h3>
+            <p style="margin-top: 10px;">
+                Vergleiche die drei Positionen.<br>
+                Beurteile, welcher Physiker am stärksten schuldhaft gehandelt hat.<br>
+                Begründe deine Entscheidung mit einem Vergleich der Taten und Reaktionen nach der Tat.
+            </p>
+        </div>
+        <textarea id="finalCompare" placeholder="Dein Abschlussurteil (2-3 Sätze)..." style="min-height: 200px;"></textarea>
+        <div id="error_l3c" class="error-message">FEHLER: BITTE EIN ABSCHLUSSURTEIL SCHREIBEN.</div>
+        <div class="btn-group" style="margin-top: 30px;">
+            <button class="action-btn btn-secondary" onclick="prevSlide()">Zurück</button>
+            <button class="action-btn" onclick="finishGame()">Fall abschließen</button>
+        </div>
+    </div>
+</div>
+
+<div class="slide-container" id="slide15">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">System // Archivierung</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 100%"></div></div>
+            <div class="step-indicator">Abgeschlossen</div>
+        </div>
+        <h2 class="slide-title">AKTE ARCHIVIERT</h2>
+    </div>
+    <div class="slide-content-area" style="align-items: center; justify-content: center; text-align: center;">
+        <div style="background: #fffcf5; padding: 40px; border: 4px solid var(--stamp-red); position: relative; max-width: 700px; width: 100%;">
+            <div class="secret-stamp" style="position: absolute; top: -20px; left: -20px;">GESCHLOSSEN</div>
+            <h1 style="color: var(--ink-black); font-size: 45px; margin-bottom: 10px; border: none;">FALL ABGESCHLOSSEN</h1>
+            <p style="font-size: 20px;">Dein generierter Urteilscode lautet:</p>
+            <div id="code_display" style="font-size: 40px; color: var(--stamp-red); font-family: 'Courier New', monospace; font-weight: bold; letter-spacing: 2px; margin: 20px 0; padding: 20px; background: rgba(168,28,28,0.05); border: 2px dashed var(--stamp-red);"></div>
+            <p style="margin-top: 20px;"><strong>Diskussion für die Klasse:</strong><br>Wo wart ihr euch einig? Wo gab es Zweifel – und warum?</p>
+            <button class="action-btn btn-secondary" onclick="location.reload()" style="max-width: 300px; margin: 30px auto 0 auto; border-color: var(--ink-black); font-weight: bold;"><i class="fa-solid fa-rotate-right"></i> System Neustart</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PROTOTYP: LEVEL 2 NEU – ARCHIV DER ZEIT (Slides 16–21)     -->
+<!-- ============================================================ -->
+
+<!-- SLIDE 16: INTRO -->
+<div class="slide-container" id="slide16">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Level 2 NEU // Intro</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 5%"></div></div>
+            <div class="step-indicator">Archiv der Zeit</div>
+        </div>
+    </div>
+    <div class="slide-content-area" style="justify-content: center; align-items: center; text-align: center; background-color: var(--ink-black); color: var(--paper-bg);">
+        <h2 style="font-size: 60px; margin-bottom: 20px; color: var(--paper-bg);">LEVEL 2</h2>
+        <p style="font-size: 32px; font-weight: bold; letter-spacing: 3px; color: var(--stamp-red);" class="typewriter">ARCHIV DER ZEIT</p>
+        <p style="font-size: 20px; color: #ddd; max-width: 400px; margin: 5px auto 0;">Historischer Kontext</p>
+        <hr style="width: 100px; border: 2px solid var(--paper-bg); margin: 30px auto;">
+        <div class="info-panel" style="max-width: 700px; text-align: left; font-size: 18px; color: var(--paper-bg); background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.2);">
+            Ihr habt die Mordmotive der Physiker untersucht. Jetzt öffnet sich das Archiv: Was hat die Zeit von Dürrenmatt geprägt? Nur wenn ihr den historischen Hintergrund versteht, könnt ihr das Drama richtig deuten.<br><br>
+            <strong style="color: var(--stamp-red);">Arbeitsauftrag:</strong><br>
+            1. <strong>Lest</strong> die drei Dossiers (A, B, C).<br>
+            2. <strong>Markiert</strong> zentrale Informationen.<br>
+            3. <strong>Fasst zusammen</strong> und <strong>erklärt</strong>, wie sich der Hintergrund im Drama wiederfinden lässt.
+        </div>
+        <div class="btn-group" style="max-width: 400px; width: 100%; margin-top: 30px;">
+            <button class="action-btn" style="background: var(--stamp-red); border-color: var(--stamp-red);" onclick="showSlide(17)">Zum Dossier-System</button>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 17: DOSSIER A – AUTOREN (DÜRRENMATT) -->
+<div class="slide-container" id="slide17">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Dossier A // Autor:innen</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 25%"></div></div>
+            <div class="step-indicator">Dürrenmatt</div>
+        </div>
+        <h2 class="slide-title">DOSSIER A – AUTOR:INNEN: FRIEDRICH DÜRRENMATT</h2>
+        <p style="font-size: 16px; margin-bottom: 5px;"><strong>Arbeitsauftrag:</strong> 1. <strong>Lies</strong> den Text. 2. <strong>Markiere</strong> Informationen zu a) Kurzbiographie und b) Erlebnisse/Haltungen. 3. <strong>Formuliere Stichpunkte</strong> in den Feldern.</p>
+    </div>
+    <div class="slide-content-area">
+        <div class="content-flex" style="gap: 30px; align-items: flex-start;">
+            <div class="flex-1" style="min-width: 340px;">
+                <div class="info-panel" style="font-size: 15px; line-height: 1.7; max-height: 420px; overflow-y: auto;">
+                    <p><strong>Friedrich Dürrenmatt</strong> wurde am 5. Januar 1921 in Konolfingen, einem kleinen Dorf im Kanton Bern, geboren. Sein Vater war Pfarrer, die Mutter Hausfrau. Die Familie zog 1935 nach Bern, wo Dürrenmatt das Gymnasium besuchte. Nach dem Abitur 1941 begann er ein Studium der Philosophie, Germanistik und Naturwissenschaften. Schon während des Studiums schrieb er erste literarische Texte, entschied sich aber 1946, das Studium abzubrechen und Schriftsteller zu werden.</p>
+                    <p>Sein erstes Drama „Es steht geschrieben" wurde 1947 uraufgeführt. Mit der Komödie „Der Besuch der alten Dame" (1956) gelang ihm der internationale Durchbruch. Es folgten „Die Physiker" (1962) und „Der Meteor" (1966). Er lebte ab 1952 in Neuchâtel und starb am 14. Dezember 1990.</p>
+                    <hr style="border-color: var(--ink-dim); margin: 15px 0;">
+                    <p><strong>Erlebnisse und Haltungen</strong></p>
+                    <p>Dürrenmatt wuchs in einer Zeit tiefgreifender Umbrüche auf. Die Schrecken des Zweiten Weltkriegs, Gewalt, Zerstörung und die Bedrohung durch den Kalten Krieg hinterließen einen starken Eindruck. Er entwickelte ein tiefes Bewusstsein für die Ambivalenz von Fortschritt und Zerstörung.</p>
+                    <p>Sein Weltbild ist geprägt von Skepsis, Ironie und philosophischer Tiefe. Er war überzeugt, dass das Leben von Zufällen und Widersprüchen bestimmt wird. Ein zentrales Thema ist die <strong>Verantwortung des Einzelnen</strong> in einer Welt mit Machtkonflikten und ethischen Dilemmata. Dürrenmatt glaubte nicht an einfache Helden oder klare Gut-Böse-Schemata.</p>
+                    <p style="font-size: 12px; color: var(--ink-dim);">Quellen: duerrenmatt.net; Dünnebier, H. (1999). GRIN Verlag.</p>
+                </div>
+            </div>
+            <div class="flex-1" style="min-width: 280px;">
+                <label>A1 – Kurzbiographie (3–5 Stichpunkte):</label>
+                <textarea id="l2n_a1" placeholder="z.B. – geb. 1921 in Konolfingen&#10;– ..." style="min-height: 150px;"></textarea>
+                <label>A2 – Erlebnisse & Haltungen (5–7 Stichpunkte):</label>
+                <textarea id="l2n_a2" placeholder="z.B. – erlebte Zweiten Weltkrieg als prägend&#10;– ..." style="min-height: 150px;"></textarea>
+                <div id="error_l2n_a" class="error-message">BITTE BEIDE FELDER AUSFÜLLEN (mind. 20 Zeichen).</div>
+                <div class="btn-group" style="margin-top: 10px;">
+                    <button class="action-btn btn-secondary" onclick="showSlide(16)">Zurück</button>
+                    <button class="action-btn" onclick="validateL2nDossier('a', 18)">Weiter zu Historiker:innen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 18: DOSSIER B – HISTORIKER (ATOMARE BEDROHUNG) -->
+<div class="slide-container" id="slide18">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Dossier B // Historiker:innen</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 50%"></div></div>
+            <div class="step-indicator">Atomare Bedrohung</div>
+        </div>
+        <h2 class="slide-title">DOSSIER B – HISTORIKER:INNEN: ATOMARE BEDROHUNG & KALTER KRIEG</h2>
+        <p style="font-size: 16px; margin-bottom: 5px;"><strong>Arbeitsauftrag:</strong> 1. <strong>Lies</strong> den Text. 2. <strong>Markiere</strong> Informationen zu a) Warum war die atomare Bedrohung so präsent? b) Welche Konflikte & Ängste bestimmten die Gesellschaft? 3. <strong>Formuliere Stichpunkte.</strong></p>
+    </div>
+    <div class="slide-content-area">
+        <div class="content-flex" style="gap: 30px; align-items: flex-start;">
+            <div class="flex-1" style="min-width: 340px;">
+                <div class="info-panel" style="font-size: 15px; line-height: 1.7; max-height: 420px; overflow-y: auto;">
+                    <p><strong>Präsenz der atomaren Bedrohung</strong></p>
+                    <p>Die atomare Bedrohung war in der Zeit Friedrich Dürrenmatts ein zentrales Thema, weil sie das Lebensgefühl der Menschen nach dem Zweiten Weltkrieg und besonders während des Kalten Krieges prägte. Nach den Atombombenabwürfen auf Hiroshima und Nagasaki 1945 wurde deutlich, welches Zerstörungspotenzial in der Kernenergie steckt. Dürrenmatt war damals 24 Jahre alt.</p>
+                    <p>Mit dem Beginn des Kalten Krieges standen sich USA und Sowjetunion feindlich gegenüber. Beide bauten riesige Atomwaffenarsenale auf. Spätestens seit 1949 die Sowjetunion die erste eigene Atombombe zündete, war klar: Ein Atomkrieg könnte jederzeit ausbrechen. Die „nukleare Abschreckung" (MAD – Mutually Assured Destruction) bedeutete, dass beide Seiten zur gegenseitigen Vernichtung fähig waren – das „Gleichgewicht des Schreckens".</p>
+                    <hr style="border-color: var(--ink-dim); margin: 15px 0;">
+                    <p><strong>Konflikte und Ängste dieser Zeit</strong></p>
+                    <p>Die Gesellschaft war von tiefen Ängsten geprägt. Bereits im 2. Weltkrieg verlangten Wissenschaftler in den USA – darunter Albert Einstein – finanzielle Mittel, um einer möglichen deutschen Atombombe zuvorzukommen.</p>
+                    <p>Die Angst vor einem dritten Weltkrieg bestimmte das kollektive Bewusstsein. Es gab regelmäßig Zivilschutzübungen, Bunkerbau und Aufklärungskampagnen. Beide Machtblöcke betrieben Propaganda, was zu einem Klima des Misstrauens führte. Gleichzeitig entstand eine Friedensbewegung, die sich gegen das Wettrüsten wandte.</p>
+                    <p style="font-size: 12px; color: var(--ink-dim);">Quellen: Petzold, M. (2024). Seniorweb.ch; Inhaltsangabe.de (2022).</p>
+                </div>
+            </div>
+            <div class="flex-1" style="min-width: 280px;">
+                <label>B1 – Atomare Bedrohung (4–6 Stichpunkte):</label>
+                <textarea id="l2n_b1" placeholder="z.B. – Hiroshima/Nagasaki 1945: Zerstörungspotenzial der Bombe&#10;– ..." style="min-height: 150px;"></textarea>
+                <label>B2 – Konflikte & Ängste (5–7 Stichpunkte):</label>
+                <textarea id="l2n_b2" placeholder="z.B. – Kalter Krieg: USA vs. Sowjetunion&#10;– ..." style="min-height: 150px;"></textarea>
+                <div id="error_l2n_b" class="error-message">BITTE BEIDE FELDER AUSFÜLLEN (mind. 20 Zeichen).</div>
+                <div class="btn-group" style="margin-top: 10px;">
+                    <button class="action-btn btn-secondary" onclick="showSlide(17)">Zurück</button>
+                    <button class="action-btn" onclick="validateL2nDossier('b', 19)">Weiter zu Wissenschaftler:innen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 19: DOSSIER C – WISSENSCHAFTLER (ETHIK/OPPENHEIMER) -->
+<div class="slide-container" id="slide19">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Dossier C // Wissenschaftler:innen</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 70%"></div></div>
+            <div class="step-indicator">Verantwortung</div>
+        </div>
+        <h2 class="slide-title">DOSSIER C – WISSENSCHAFTLER:INNEN: VERANTWORTUNG DER WISSENSCHAFT</h2>
+        <p style="font-size: 16px; margin-bottom: 5px;"><strong>Arbeitsauftrag:</strong> 1. <strong>Lies</strong> den Text. 2. <strong>Markiere</strong> Informationen zu a) Welche Verantwortung tragen Wissenschaftler? b) Wie erlebte Oppenheimer diese Frage? 3. <strong>Formuliere Stichpunkte.</strong></p>
+    </div>
+    <div class="slide-content-area">
+        <div class="content-flex" style="gap: 30px; align-items: flex-start;">
+            <div class="flex-1" style="min-width: 340px;">
+                <div class="info-panel" style="font-size: 15px; line-height: 1.7; max-height: 380px; overflow-y: auto;">
+                    <p><strong>Verantwortung der Wissenschaft</strong></p>
+                    <p>Wissenschaftler tragen eine besondere Verantwortung für ihr Wissen und dessen Anwendung. Sie müssen sich mit den möglichen Folgen ihrer Forschung auseinandersetzen. Besonders relevant ist die „<strong>Dual-Use-Problematik</strong>": Forschungsergebnisse können sowohl zum Nutzen als auch zum Schaden der Gesellschaft eingesetzt werden.</p>
+                    <p>Neben gesetzlichen Vorgaben gibt es Ethikcodes und Ethikkommissionen. Trotzdem bleibt die Verantwortung letztlich beim einzelnen Wissenschaftler: Er kann diese nicht einfach an Staat oder Gesellschaft abgeben.</p>
+                    <hr style="border-color: var(--ink-dim); margin: 15px 0;">
+                    <p><strong>Oppenheimer und Aktualität</strong></p>
+                    <p>J. Robert Oppenheimer, Leiter des Manhattan-Projekts und „Vater der Atombombe", wurde unmittelbar mit der ethischen Verantwortung von Wissenschaftlern konfrontiert. Nach dem Einsatz der Atombombe erkannte er die gewaltigen moralischen Implikationen seiner Arbeit.</p>
+                    <div style="background: rgba(168,28,28,0.08); border-left: 5px solid var(--stamp-red); padding: 12px 15px; margin: 12px 0; font-style: italic; font-size: 16px; font-family: 'Courier New';">
+                        „Die Physiker haben die Sünde erkannt; und das ist ein Wissen, das sie nicht verlieren können." – Oppenheimer
+                    </div>
+                    <p>Er setzte sich nach dem Krieg für die Kontrolle von Atomwaffen ein. Sein Dilemma ist heute noch aktuell – bei KI, Biotechnologie, Gentechnik stellen sich dieselben ethischen Fragen.</p>
+                    <p style="font-size: 12px; color: var(--ink-dim);">Quellen: Hochschulverband.de (2010); editverse.com (o.J.).</p>
+                </div>
+            </div>
+            <div class="flex-1" style="min-width: 280px;">
+                <label>C1 – Verantwortung der Wissenschaft (5–7 Stichpunkte):</label>
+                <textarea id="l2n_c1" placeholder="z.B. – Wissenschaftler müssen Folgen ihrer Forschung bedenken&#10;– ..." style="min-height: 150px;"></textarea>
+                <label>C2 – Oppenheimer & Aktualität (4–6 Stichpunkte):</label>
+                <textarea id="l2n_c2" placeholder="z.B. – leitete Manhattan-Projekt&#10;– ..." style="min-height: 150px;"></textarea>
+                <div id="error_l2n_c" class="error-message">BITTE BEIDE FELDER AUSFÜLLEN (mind. 20 Zeichen).</div>
+                <div class="btn-group" style="margin-top: 10px;">
+                    <button class="action-btn btn-secondary" onclick="showSlide(18)">Zurück</button>
+                    <button class="action-btn" onclick="validateL2nDossier('c', 20)">Zum Verknüpfungsraum</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 20: VERKNÜPFUNGSRAUM -->
+<div class="slide-container" id="slide20">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Verknüpfungsraum</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 88%"></div></div>
+            <div class="step-indicator">Drama-Transfer</div>
+        </div>
+        <h2 class="slide-title">VERKNÜPFUNGSRAUM – WAS DAVON STECKT IM DRAMA?</h2>
+        <p style="font-size: 15px; margin-bottom: 0;"><strong>Arbeitsauftrag:</strong> Zieht die Karten in die passende Zone. Formuliert anschließend eine Kernaussage und gebt den Tresor-Code ein.</p>
+    </div>
+    <div class="slide-content-area">
+
+        <!-- POOL -->
+        <div id="l2n-card-pool"
+            style="background: var(--paper-dark); border: 2px dashed var(--ink-dim); padding: 12px; margin-bottom: 15px;"
+            ondragover="l2nAllowDrop(event)"
+            ondragenter="event.preventDefault(); event.currentTarget.style.borderColor='#555';"
+            ondragleave="if(!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.style.borderColor='var(--ink-dim)';"
+            ondrop="l2nDropToPool(event)">
+            <div style="font-weight:bold; font-family:'Courier New'; font-size:12px; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; color:var(--ink-dim);">▼ Karten-Pool — in Zone ziehen (zurückziehen: Karte hierher ziehen):</div>
+            <div id="pool-cards-container" style="display:flex; flex-wrap:wrap; gap:8px; min-height:36px;"></div>
+        </div>
+
+        <!-- 3 DROP-ZONEN -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:15px;">
+            <div class="l2n-drop-zone" id="l2n-zone-A" data-zone="A"
+                ondragover="l2nAllowDrop(event)" ondragenter="l2nDragEnter(event)" ondragleave="l2nDragLeave(event)" ondrop="l2nDrop(event,'A')">
+                <div class="drop-zone-title" style="font-size:13px; color:#6b4226;">Im Drama sichtbar:<br>Autor / Dürrenmatt</div>
+            </div>
+            <div class="l2n-drop-zone" id="l2n-zone-B" data-zone="B"
+                ondragover="l2nAllowDrop(event)" ondragenter="l2nDragEnter(event)" ondragleave="l2nDragLeave(event)" ondrop="l2nDrop(event,'B')">
+                <div class="drop-zone-title" style="font-size:13px; color:var(--typewriter-blue);">Im Drama sichtbar:<br>Atomare Bedrohung / Kalter Krieg</div>
+            </div>
+            <div class="l2n-drop-zone" id="l2n-zone-C" data-zone="C"
+                ondragover="l2nAllowDrop(event)" ondragenter="l2nDragEnter(event)" ondragleave="l2nDragLeave(event)" ondrop="l2nDrop(event,'C')">
+                <div class="drop-zone-title" style="font-size:13px; color:var(--stamp-red);">Im Drama sichtbar:<br>Verantwortung der Wissenschaft</div>
+            </div>
+        </div>
+
+        <!-- KERNAUSSAGE + TRESOR nebeneinander -->
+        <div style="display:grid; grid-template-columns:1fr 300px; gap:15px; margin-bottom:15px;">
+            <div>
+                <label style="font-size:15px;">Kernaussage (1–2 Sätze): „Das Drama zeigt, dass …"</label>
+                <textarea id="l2n_kernaussage" placeholder="Formuliert gemeinsam eine Kernaussage …" style="min-height:90px; margin-bottom:0;"></textarea>
+            </div>
+            <div style="background:#fffcf5; border:3px solid var(--ink-black); padding:15px; box-shadow:3px 3px 0 rgba(0,0,0,0.15);">
+                <div style="font-weight:bold; font-family:'Courier New'; font-size:14px; margin-bottom:8px; text-transform:uppercase;">🔒 Tresor-Code</div>
+                <p style="font-size:13px; margin:0 0 8px 0;">Anfangsbuchstaben von:<br><strong>Angst – Verantwortung – Macht</strong></p>
+                <input type="text" id="l2n_code" placeholder="A-V-M" style="text-align:center; font-size:22px; letter-spacing:4px; padding:8px; margin-bottom:0;">
+                <div id="error_l2n_code" class="error-message" style="font-size:12px; padding:8px; margin-top:5px;">FALSCHER CODE.</div>
+                <button class="action-btn" style="margin-top:10px; font-size:15px; padding:12px;" onclick="validateL2nCode()">Tresor öffnen</button>
+            </div>
+        </div>
+
+        <div class="btn-group" style="padding-top:0; margin-top:0;">
+            <button class="action-btn btn-secondary" onclick="showSlide(19)">← Zurück</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- SLIDE 21: SHARE-TAFEL -->
+<div class="slide-container" id="slide21">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">Archiv // Abschluss</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 100%"></div></div>
+            <div class="step-indicator">Ergebnisse teilen</div>
+        </div>
+        <h2 class="slide-title">ARCHIV-SHARE – ERGEBNISSE VERGLEICHEN</h2>
+    </div>
+    <div class="slide-content-area" style="justify-content: center; align-items: center;">
+        <div class="info-panel" style="max-width: 800px; width: 100%;">
+            <h3 class="highlight" style="margin-bottom: 15px;">Arbeitsauftrag – Klassen-Diskussion</h3>
+            <p>1. <strong>Vergleicht</strong> eure Kernaussagen mit anderen Gruppen.<br>
+            2. <strong>Nennt</strong> je Gruppe ein Beispiel, das im Drama sichtbar ist.<br>
+            3. <strong>Einigt euch</strong> auf eine gemeinsame Klassen-Kernaussage.</p>
+        </div>
+        <div style="max-width: 800px; width: 100%; margin-top: 20px;">
+            <label>Gemeinsame Klassen-Kernaussage:</label>
+            <textarea id="l2n_klasse" placeholder="„Das Drama zeigt, dass …" (gemeinsam erarbeitet)" style="min-height: 120px;"></textarea>
+        </div>
+        <div style="background: #fffcf5; border: 4px solid var(--stamp-red); padding: 30px; text-align: center; max-width: 500px; width: 100%; margin-top: 30px;">
+            <div class="secret-stamp" style="margin-bottom: 15px;">ARCHIV GESCHLOSSEN</div>
+            <p style="font-size: 18px; font-weight: bold;">Level 2 – Historischer Kontext abgeschlossen.</p>
+            <p style="font-size: 16px; color: var(--ink-dim);">— Meldet euch bei der Lehrkraft. —</p>
+        </div>
+    </div>
+</div>
+
+<button onclick="nextSlide()" style="position: fixed; top: 10px; right: 10px; z-index: 9999; background: gold; border: 2px solid black; padding: 10px; font-weight: bold; cursor: pointer;">TEST: 1 SEITE WEITER</button>
+
+<script>
+    let currentSlide = 1;
+
+    function showSlide(n) {
+        document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
+        const newSlide = document.getElementById('slide' + n);
+        newSlide.classList.add('active');
+        currentSlide = n;
+        const contentArea = newSlide.querySelector('.slide-content-area');
+        if (contentArea) { contentArea.scrollTop = 0; }
+        // Prototyp: Pool initialisieren wenn Slide 20 zum ersten Mal gezeigt wird
+        if (n === 20) {
+            const poolContainer = document.getElementById('pool-cards-container');
+            if (poolContainer && poolContainer.children.length === 0 && l2nPoolCards.length === 0) {
+                l2nInitPool();
+            } else if (poolContainer && poolContainer.children.length === 0 && l2nPoolCards.length > 0) {
+                l2nRenderPool();
+            }
+        }
+    }
+
+    function nextSlide() { showSlide(currentSlide + 1); }
+    function prevSlide() { if(currentSlide > 1) showSlide(currentSlide - 1); }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active-content'));
+        document.querySelectorAll('.tab').forEach(el => el.classList.remove('active-tab'));
+        document.getElementById(tabId).classList.add('active-content');
+        event.target.classList.add('active-tab');
+    }
+
+    function toggleHelp(id) {
+        let el = document.getElementById(id);
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        if (el.style.display === 'block') el.scrollIntoView({behavior: "smooth", block: "nearest"});
+    }
+
+    function validateProfilerAkten() {
+        const inputs = document.querySelectorAll('.page-validation');
+        let allValid = true;
+        inputs.forEach(input => {
+            const val = input.value.toLowerCase();
+            if (val.trim() === '' || !val.match(/s\.|seite|s \d+/i)) {
+                allValid = false;
+                input.style.borderBottomColor = 'var(--stamp-red)';
+                input.style.backgroundColor = 'rgba(168,28,28,0.05)';
+            } else {
+                input.style.borderBottomColor = 'var(--ink-black)';
+                input.style.backgroundColor = 'rgba(255,255,255,0.5)';
+            }
+        });
+        if (allValid) {
+            document.getElementById('error_profiler').style.display = 'none';
+            showSlide(4);
+        } else {
+            document.getElementById('error_profiler').style.display = 'block';
+        }
+    }
+
+    function validateCode1() {
+        const val = document.getElementById('input_code1').value.toUpperCase().replace(/[^A-Z]/g, '');
+        if (val === 'GGH') {
+            document.getElementById('error1').style.display = 'none';
+            showSlide(5);
+        } else {
+            document.getElementById('error1').style.display = 'block';
+        }
+    }
+
+    function validateL2Task1() {
+        const val = document.getElementById('l2_task1').value.trim();
+        if (val.length > 20) {
+            document.getElementById('error_l2t1').style.display = 'none';
+            showSlide(7);
+        } else {
+            document.getElementById('error_l2t1').style.display = 'block';
+        }
+    }
+
+    // ==============================================
+    // LEVEL 2 – DRAG & DROP (KORRIGIERT)
+    // ==============================================
+    const quotesData = [
+        { id: 1, text: '„In einem sehr einfachen, aber tiefen Sinn haben die Physiker die Sünde kennengelernt." – Oppenheimer', correct: 'C' },
+        { id: 2, text: '„Jetzt bin ich der Tod geworden, der Zerstörer der Welten." – Oppenheimer', correct: 'C' },
+        { id: 3, text: '„Es gibt Risiken, die man nicht eingehen darf." – Möbius', correct: 'B' },
+        { id: 4, text: '„Wer tötet, ist ein Mörder, und wir haben getötet." – Möbius', correct: 'C' },
+        { id: 5, text: '„Wenn ich weiter sehen konnte als andere, dann nur, weil ich auf den Schultern von Riesen stand." – Newton', correct: 'A' },
+        { id: 6, text: '„Die entfesselte Macht des Atoms hat alles verändert – nur unsere Art zu denken nicht." – Einstein', correct: 'B' }
+    ];
+
+    let remainingQuotes = [...quotesData];
+    let draggedQuoteId = null;
+    let draggedFromZone = null; // null = kommt aus dem Pool, sonst Zone-ID ('A','B','C')
+
+    function renderNextQuote() {
+        const container = document.getElementById('active-quote-container');
+        if (!container) return;
+        if (remainingQuotes.length > 0) {
+            const q = remainingQuotes[0];
+            container.innerHTML = '';
+            const card = document.createElement('div');
+            card.id = 'drag-quote-card';
+            card.className = 'drag-quote-card';
+            card.draggable = true;
+            card.setAttribute('data-quote-id', q.id);
+            card.textContent = q.text;
+            card.addEventListener('dragstart', dragStart);
+            container.appendChild(card);
+        } else {
+            container.innerHTML = '<div style="font-weight:bold;color:#28a745;font-size:22px;"><i class="fa-solid fa-check-circle"></i> Alle Zitate wurden abgelegt! Klicke unten auf "Dossier überprüfen".</div>';
+        }
+    }
+
+    function makeAssignedQuote(q, zoneId) {
+        const el = document.createElement('div');
+        el.className = 'assigned-quote';
+        el.draggable = true;
+        el.setAttribute('data-quote-id', q.id);
+        el.setAttribute('data-correct', q.correct);
+        el.setAttribute('data-zone', zoneId);
+        el.textContent = q.text;
+        el.title = 'Ziehen zum Verschieben';
+
+        el.addEventListener('dragstart', function(e) {
+            draggedQuoteId = q.id;
+            draggedFromZone = zoneId;
+            e.dataTransfer.setData('text/plain', String(q.id));
+            e.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => el.classList.add('dragging'), 0);
+        });
+        el.addEventListener('dragend', function() {
+            el.classList.remove('dragging');
+        });
+        return el;
+    }
+
+    function dragStart(ev) {
+        draggedQuoteId = parseInt(ev.target.getAttribute('data-quote-id'));
+        draggedFromZone = null; // kommt aus dem Pool
+        ev.dataTransfer.setData('text/plain', String(draggedQuoteId));
+        ev.dataTransfer.effectAllowed = 'move';
+        setTimeout(() => { if (ev.target) ev.target.style.opacity = '0.4'; }, 0);
+    }
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+        ev.dataTransfer.dropEffect = 'move';
+    }
+
+    function dragEnterZone(ev) {
+        ev.preventDefault();
+        ev.currentTarget.classList.add('drag-over');
+    }
+
+    function dragLeaveZone(ev) {
+        if (!ev.currentTarget.contains(ev.relatedTarget)) {
+            ev.currentTarget.classList.remove('drag-over');
+        }
+    }
+
+    function dropToZone(ev, zoneId) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.currentTarget.classList.remove('drag-over');
+
+        const rawId = ev.dataTransfer.getData('text/plain');
+        const quoteId = parseInt(rawId) || draggedQuoteId;
+        if (!quoteId) return;
+
+        const sourceZone = draggedFromZone;
+
+        if (sourceZone === null) {
+            // Kommt aus dem Pool → aus remainingQuotes entfernen
+            const idx = remainingQuotes.findIndex(q => q.id === quoteId);
+            if (idx === -1) return;
+            const q = remainingQuotes.splice(idx, 1)[0];
+
+            const card = document.getElementById('drag-quote-card');
+            if (card) card.style.opacity = '1';
+
+            ev.currentTarget.appendChild(makeAssignedQuote(q, zoneId));
+            draggedQuoteId = null;
+            draggedFromZone = null;
+            renderNextQuote();
+
+        } else if (sourceZone !== zoneId) {
+            // Kommt aus einer anderen Zone → Element verschieben
+            const sourceEl = document.querySelector(
+                '#zone' + sourceZone + ' [data-quote-id="' + quoteId + '"]'
+            );
+            if (!sourceEl) return;
+
+            const q = quotesData.find(x => x.id === quoteId);
+            if (!q) return;
+
+            sourceEl.remove();
+            // Feedback-Farben zurücksetzen
+            document.querySelectorAll('.assigned-quote').forEach(e => {
+                e.classList.remove('correct-anim', 'wrong-anim');
+            });
+            document.getElementById('error_l2t2').style.display = 'none';
+
+            ev.currentTarget.appendChild(makeAssignedQuote(q, zoneId));
+            draggedQuoteId = null;
+            draggedFromZone = null;
+        }
+        // sourceZone === zoneId → in dieselbe Zone fallen gelassen, nichts tun
+    }
+
+    function returnQuoteToPool(quoteId, el) {
+        const q = quotesData.find(x => x.id === quoteId);
+        if (!q) return;
+        remainingQuotes.push(q);
+        el.remove();
+        document.querySelectorAll('.assigned-quote').forEach(e => {
+            e.classList.remove('correct-anim', 'wrong-anim');
+        });
+        document.getElementById('error_l2t2').style.display = 'none';
+        renderNextQuote();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => { renderNextQuote(); });
+
+    function validateL2Task2() {
+        const errorBox = document.getElementById('error_l2t2');
+
+        if (remainingQuotes.length > 0) {
+            errorBox.innerHTML = 'FEHLER: ES SIND NOCH NICHT ALLE ZITATE EINSORTIERT.';
+            errorBox.style.display = 'block';
+            return;
+        }
+
+        const assignedQuotes = document.querySelectorAll('.assigned-quote');
+        let allCorrect = true;
+
+        assignedQuotes.forEach(q => {
+            const correctZone = q.getAttribute('data-correct');
+            const currentZone = q.getAttribute('data-zone');
+            q.classList.remove('correct-anim', 'wrong-anim');
+            if (currentZone === correctZone) {
+                q.classList.add('correct-anim');
+            } else {
+                q.classList.add('wrong-anim');
+                allCorrect = false;
+            }
+        });
+
+        const t = document.getElementById('l2_task2').value.trim();
+
+        if (!allCorrect) {
+            errorBox.innerHTML = 'FEHLER: EINIGE ZITATE WURDEN FALSCH ABGELEGT (ROT MARKIERT). KLICKE SIE AN, UM SIE ZURÜCKZUHOLEN.';
+            errorBox.style.display = 'block';
+        } else if (t.length <= 15) {
+            errorBox.innerHTML = 'FEHLER: DIE BEGRÜNDUNG (AUFGABE 2) IST ZU KURZ ODER FEHLT GANZ.';
+            errorBox.style.display = 'block';
+        } else {
+            errorBox.style.display = 'none';
+            showSlide(8);
+        }
+    }
+
+    function validateL2Task3() {
+        const text = document.getElementById('ethics_statement').value.toLowerCase();
+        const errBox = document.getElementById('error_l2t3');
+        let errors = [];
+        if (!text.includes('verantwortung')) errors.push("Wort fehlt: 'Verantwortung'");
+        if (!text.includes('konsequenzen')) errors.push("Wort fehlt: 'Konsequenzen'");
+        if (!text.includes('grenzen')) errors.push("Wort fehlt: 'Grenzen'");
+        const hasName = text.includes('newton') || text.includes('einstein') || text.includes('oppenheimer');
+        if (!hasName) errors.push('Namen fehlen (Newton, Einstein oder Oppenheimer)');
+        if (text.length < 50) errors.push('Statement ist zu kurz.');
+        if (errors.length === 0) {
+            errBox.style.display = 'none';
+            showSlide(9);
+        } else {
+            errBox.innerHTML = 'ABLEHNUNG! GRÜNDE:<br><ul style="margin-top:5px;margin-bottom:0;padding-left:20px;"><li>' + errors.join('</li><li>') + '</li></ul>';
+            errBox.style.display = 'block';
+            errBox.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        }
+    }
+
+    function validateL3M() {
+        const quote = document.getElementById('quoteM').value.trim();
+        const reason = document.getElementById('reasonM').value.trim();
+        if (quote.length > 5 && reason.length > 15) {
+            document.getElementById('error_l3m').style.display = 'none';
+            document.getElementById('tileM').style.backgroundColor = '#eaffe8';
+            document.getElementById('tileM').style.border = '2px solid #28a745';
+            document.getElementById('btnM').innerHTML = '<i class="fa-solid fa-check"></i> Erledigt (Anpassen)';
+            document.getElementById('btnM').style.borderColor = '#28a745';
+            document.getElementById('btnM').style.color = '#28a745';
+            document.getElementById('btnM').style.backgroundColor = 'transparent';
+            showSlide(10);
+        } else {
+            document.getElementById('error_l3m').style.display = 'block';
+        }
+    }
+
+    function validateL3N() {
+        const quote = document.getElementById('quoteN').value.trim();
+        const reason = document.getElementById('reasonN').value.trim();
+        if (quote.length > 5 && reason.length > 15) {
+            document.getElementById('error_l3n').style.display = 'none';
+            document.getElementById('tileN').style.backgroundColor = '#eaffe8';
+            document.getElementById('tileN').style.border = '2px solid #28a745';
+            document.getElementById('btnN').innerHTML = '<i class="fa-solid fa-check"></i> Erledigt (Anpassen)';
+            document.getElementById('btnN').style.borderColor = '#28a745';
+            document.getElementById('btnN').style.color = '#28a745';
+            document.getElementById('btnN').style.backgroundColor = 'transparent';
+            showSlide(10);
+        } else {
+            document.getElementById('error_l3n').style.display = 'block';
+        }
+    }
+
+    function validateL3E() {
+        const quote = document.getElementById('quoteE').value.trim();
+        const reason = document.getElementById('reasonE').value.trim();
+        if (quote.length > 5 && reason.length > 15) {
+            document.getElementById('error_l3e').style.display = 'none';
+            document.getElementById('tileE').style.backgroundColor = '#eaffe8';
+            document.getElementById('tileE').style.border = '2px solid #28a745';
+            document.getElementById('btnE').innerHTML = '<i class="fa-solid fa-check"></i> Erledigt (Anpassen)';
+            document.getElementById('btnE').style.borderColor = '#28a745';
+            document.getElementById('btnE').style.color = '#28a745';
+            document.getElementById('btnE').style.backgroundColor = 'transparent';
+            showSlide(10);
+        } else {
+            document.getElementById('error_l3e').style.display = 'block';
+        }
+    }
+
+    function finishGame() {
+        const compare = document.getElementById('finalCompare');
+        if (!compare || compare.value.trim().length < 10) {
+            alert('FEHLER: Bitte schreibe zuerst dein Abschlussurteil in das Textfeld!');
+            return;
+        }
+        const m = document.getElementById('sliderM') ? document.getElementById('sliderM').value : 0;
+        const n = document.getElementById('sliderN') ? document.getElementById('sliderN').value : 0;
+        const e = document.getElementById('sliderE') ? document.getElementById('sliderE').value : 0;
+        const codeDisplay = document.getElementById('code_display');
+        if (codeDisplay) { codeDisplay.innerText = 'M-' + m + '% / N-' + n + '% / E-' + e + '%'; }
+        showSlide(15);
+    }
+
+    // ============================================================
+    // PROTOTYP LEVEL 2 NEU – Dossier-Validierung & Drag & Drop
+    // ============================================================
+
+    const l2nCards = [
+        { id: 1, dossier: 'A', text: 'Dürrenmatt erlebte Zweiten Weltkrieg und atomare Bedrohung als prägende Zeit.' },
+        { id: 2, dossier: 'A', text: 'Sein Weltbild ist skeptisch: keine einfachen Antworten, Zufall und Widersprüche.' },
+        { id: 3, dossier: 'A', text: 'Thema: Verantwortung des Einzelnen in einer Welt mit Machtkonflikten und ethischen Dilemmata.' },
+        { id: 4, dossier: 'B', text: 'Hiroshima / Nagasaki 1945 zeigten das Zerstörungspotenzial der Atombombe.' },
+        { id: 5, dossier: 'B', text: 'Kalter Krieg: Wettrüsten USA vs. Sowjetunion, „Gleichgewicht des Schreckens" (MAD).' },
+        { id: 6, dossier: 'B', text: 'Angst prägte Alltag: Bunker, Zivilschutzübungen, Propaganda, Misstrauen.' },
+        { id: 7, dossier: 'C', text: 'Wissenschaftler tragen Verantwortung für Wissen und Anwendung (ethisch/gesellschaftlich).' },
+        { id: 8, dossier: 'C', text: 'Dual Use: Forschung kann nützen oder schaden; Missbrauch ist möglich.' },
+        { id: 9, dossier: 'C', text: 'Oppenheimer war erschüttert, setzte sich für Kontrolle ein; Dilemma bis heute aktuell.' }
+    ];
+
+    // Welche Karten sind noch im Pool (IDs)
+    let l2nPoolCards = l2nCards.map(c => c.id);
+    let l2nDragId = null;
+    let l2nDragFromZone = null; // null = Pool
+
+    function l2nRenderPool() {
+        const container = document.getElementById('pool-cards-container');
+        if (!container) return;
+        container.innerHTML = '';
+        l2nPoolCards.forEach(id => {
+            const c = l2nCards.find(x => x.id === id);
+            const el = document.createElement('div');
+            el.className = 'l2n-context-card';
+            el.draggable = true;
+            el.setAttribute('data-id', c.id);
+            el.setAttribute('data-dossier', c.dossier);
+            el.textContent = '[' + c.dossier + '] ' + c.text;
+            el.addEventListener('dragstart', e => {
+                l2nDragId = c.id;
+                l2nDragFromZone = null;
+                e.dataTransfer.setData('text/plain', String(c.id));
+                e.dataTransfer.effectAllowed = 'move';
+                setTimeout(() => el.classList.add('dragging'), 0);
+            });
+            el.addEventListener('dragend', () => el.classList.remove('dragging'));
+            container.appendChild(el);
+        });
+    }
+
+    function l2nMakePlacedCard(card, zoneId) {
+        const el = document.createElement('div');
+        el.className = 'l2n-placed-card';
+        el.draggable = true;
+        el.setAttribute('data-id', card.id);
+        el.setAttribute('data-dossier', card.dossier);
+        el.setAttribute('data-zone', zoneId);
+        el.textContent = '[' + card.dossier + '] ' + card.text;
+        el.title = 'Ziehen zum Verschieben';
+        el.addEventListener('dragstart', e => {
+            l2nDragId = card.id;
+            l2nDragFromZone = zoneId;
+            e.dataTransfer.setData('text/plain', String(card.id));
+            e.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => el.classList.add('dragging'), 0);
+        });
+        el.addEventListener('dragend', () => el.classList.remove('dragging'));
+        return el;
+    }
+
+    function l2nAllowDrop(ev) { ev.preventDefault(); ev.dataTransfer.dropEffect = 'move'; }
+
+    function l2nDragEnter(ev) { ev.preventDefault(); ev.currentTarget.classList.add('drag-over'); }
+
+    function l2nDragLeave(ev) {
+        if (!ev.currentTarget.contains(ev.relatedTarget)) {
+            ev.currentTarget.classList.remove('drag-over');
+        }
+    }
+
+    function l2nDrop(ev, zoneId) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        ev.currentTarget.classList.remove('drag-over');
+
+        const cardId = parseInt(ev.dataTransfer.getData('text/plain') || l2nDragId);
+        if (!cardId) return;
+        const card = l2nCards.find(x => x.id === cardId);
+        if (!card) return;
+
+        if (l2nDragFromZone === null) {
+            // Aus dem Pool → aus Pool entfernen
+            l2nPoolCards = l2nPoolCards.filter(id => id !== cardId);
+            l2nRenderPool();
+        } else if (l2nDragFromZone !== zoneId) {
+            // Aus anderer Zone → altes Element entfernen
+            const old = document.querySelector('#l2n-zone-' + l2nDragFromZone + ' [data-id="' + cardId + '"]');
+            if (old) old.remove();
+        } else {
+            // Gleiche Zone → nichts tun
+            l2nDragId = null; l2nDragFromZone = null; return;
+        }
+
+        ev.currentTarget.appendChild(l2nMakePlacedCard(card, zoneId));
+        l2nDragId = null;
+        l2nDragFromZone = null;
+    }
+
+    // Pool auch als Drop-Zone (zurücklegen)
+    function l2nDropToPool(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        document.getElementById('l2n-card-pool').style.borderStyle = 'dashed';
+        document.getElementById('l2n-card-pool').style.borderColor = 'var(--ink-dim)';
+
+        const cardId = parseInt(ev.dataTransfer.getData('text/plain') || l2nDragId);
+        if (!cardId || l2nDragFromZone === null) { l2nDragId = null; l2nDragFromZone = null; return; }
+
+        const old = document.querySelector('#l2n-zone-' + l2nDragFromZone + ' [data-id="' + cardId + '"]');
+        if (old) old.remove();
+        if (!l2nPoolCards.includes(cardId)) l2nPoolCards.push(cardId);
+        l2nRenderPool();
+        l2nDragId = null;
+        l2nDragFromZone = null;
+    }
+
+    // Dossier-Validierung (A/B/C → nächste Slide)
+    function validateL2nDossier(letter, nextSlide) {
+        const f1 = document.getElementById('l2n_' + letter + '1').value.trim();
+        const f2 = document.getElementById('l2n_' + letter + '2').value.trim();
+        const errEl = document.getElementById('error_l2n_' + letter);
+        if (f1.length >= 20 && f2.length >= 20) {
+            errEl.style.display = 'none';
+            // Beim ersten Aufruf von Slide 20 den Pool initialisieren
+            if (nextSlide === 20) l2nInitPool();
+            showSlide(nextSlide);
+        } else {
+            errEl.style.display = 'block';
+        }
+    }
+
+    function l2nInitPool() {
+        l2nPoolCards = l2nCards.map(c => c.id);
+        // Zonen leeren
+        ['A','B','C'].forEach(z => {
+            const zone = document.getElementById('l2n-zone-' + z);
+            if (zone) {
+                const title = zone.querySelector('.drop-zone-title');
+                zone.innerHTML = '';
+                if (title) zone.appendChild(title);
+            }
+        });
+        l2nRenderPool();
+
+        // Pool als Drop-Zone einrichten
+        const pool = document.getElementById('l2n-card-pool');
+        if (pool) {
+            pool.ondragover = e => { e.preventDefault(); pool.style.borderColor = '#888'; };
+            pool.ondragleave = e => { if (!pool.contains(e.relatedTarget)) { pool.style.borderColor = 'var(--ink-dim)'; } };
+            pool.ondrop = l2nDropToPool;
+        }
+    }
+
+    function validateL2nCode() {
+        const val = document.getElementById('l2n_code').value.toUpperCase().replace(/[^A-Z]/g, '');
+        const errEl = document.getElementById('error_l2n_code');
+        if (val === 'AVM') {
+            errEl.style.display = 'none';
+            const kernaussage = document.getElementById('l2n_kernaussage').value.trim();
+            if (kernaussage.length < 20) {
+                errEl.innerHTML = 'CODE KORREKT! BITTE NOCH DIE KERNAUSSAGE AUSFÜLLEN.';
+                errEl.style.display = 'block';
+                document.getElementById('l2n_kernaussage').focus();
+                return;
+            }
+            showSlide(21);
+        } else {
+            errEl.style.display = 'block';
+        }
+    }
+
+</script>
+
+</body>
+</html>
