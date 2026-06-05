@@ -148,14 +148,6 @@
         .slider-output { text-align: center; font-size: 28px; font-weight: bold; color: var(--stamp-red); margin-bottom: 30px; font-family: 'Courier New'; border: 2px dashed var(--stamp-red); padding: 10px; display: inline-block; min-width: 150px;}
 
         /* L2 NEU – Kontext-Karten & Zonen */
-        .l2n-drop-zone { background: var(--paper-dark); border: 2px solid var(--ink-black); padding: 12px; min-height: 200px; display: flex; flex-direction: column; gap: 8px; transition: background 0.15s, border-style 0.15s; box-shadow: 3px 3px 0 rgba(0,0,0,0.1); }
-        .l2n-drop-zone.drag-over { background: #d4c5ab; border-style: dashed; }
-        .drop-zone-title { font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 2px solid var(--ink-black); padding-bottom: 10px; margin-bottom: 10px; font-size: 18px; pointer-events: none; font-family: 'Courier New';}
-
-        .l2n-context-card { background: #fff; border: 2px solid var(--typewriter-blue); border-left: 5px solid var(--typewriter-blue); padding: 7px 10px; font-size: 12px; font-weight: bold; color: var(--typewriter-blue); cursor: grab; user-select: none; max-width: 280px; line-height: 1.4; box-shadow: 2px 2px 0 rgba(50,75,107,0.15); transition: transform 0.1s; }
-        .l2n-context-card:active { cursor: grabbing; }
-        .l2n-context-card.dragging { opacity: 0.4; }
-        
         .path-instruction-box { border: 2px dashed var(--ink-dim); padding: 20px; margin-bottom: 20px; background: rgba(0,0,0,0.02); }
         .path-instruction-box h3 { background: #dcd3be; padding: 5px 10px; margin: -20px -20px 15px -20px; font-family: 'Courier New'; font-size: 16px; border-bottom: 2px dashed var(--ink-dim); text-transform: uppercase;}
         .path-container { display: flex; justify-content: space-between; align-items: stretch; gap: 10px; margin: 20px 0; }
@@ -322,9 +314,6 @@
 </head>
 <body>
 
-<!-- ============================================================ -->
-<!-- SLIDE 0: PRÄ-FRAGEBOGEN (Modernes Design)                    -->
-<!-- ============================================================ -->
 <div class="slide-container modern-survey active" id="slide0">
     <div class="modern-header">
         <h2>Prä-Erhebung zur Unterrichtseinheit</h2>
@@ -333,10 +322,8 @@
     
     <div class="modern-content">
         <form id="pre_survey_form" action="https://formspree.io/f/mqeoeaoq" method="POST">
-            <!-- Verstecktes Feld zur Unterscheidung der Formulare -->
             <input type="hidden" name="Erhebungszeitpunkt" value="Prä-Fragebogen (Vor dem Spiel)">
 
-            <!-- 1. Soziodemographie -->
             <div class="modern-card">
                 <h3>Soziodemographische Angaben</h3>
                 
@@ -362,7 +349,6 @@
                 </div>
             </div>
 
-            <!-- 2. Kriterien guten Unterrichts (Helmke etc.) -->
             <div class="modern-card">
                 <h3>Einschätzung zum bisherigen Unterricht</h3>
                 <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Wie sehr stimmst du den folgenden Aussagen zu?</p>
@@ -482,7 +468,6 @@
                 </div>
             </div>
 
-            <!-- 3. Benotung -->
             <div class="modern-card">
                 <h3>Bewertung des Deutschunterrichts</h3>
                 <div class="modern-form-group">
@@ -504,11 +489,6 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- START DES SPIELS (60er JAHRE STIL)                           -->
-<!-- ============================================================ -->
-
-<!-- SLIDE 1: INTRO -->
 <div class="slide-container game-slide" id="slide1">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -530,7 +510,6 @@
     </div>
 </div>
 
-<!-- SLIDE 2: LEVEL 1 INTRO -->
 <div class="slide-container game-slide" id="slide2">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -551,7 +530,6 @@
     </div>
 </div>
 
-<!-- SLIDE 3: LEVEL 1 PROFILER -->
 <div class="slide-container game-slide" id="slide3">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -654,7 +632,6 @@
     </div>
 </div>
 
-<!-- SLIDE 4: LEVEL 1 TRESOR -->
 <div class="slide-container game-slide" id="slide4">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -689,11 +666,6 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- LEVEL 2 NEU – ARCHIV DER ZEIT                                -->
-<!-- ============================================================ -->
-
-<!-- SLIDE 5: LEVEL 2 INTRO -->
 <div class="slide-container game-slide" id="slide5">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -711,7 +683,8 @@
             Ihr habt die Mordmotive der Physiker untersucht. Jetzt öffnet sich das Archiv: Was hat die Zeit von Dürrenmatt geprägt? Nur wenn ihr den historischen Hintergrund versteht, könnt ihr das Drama richtig deuten.<br><br>
             <strong style="color: var(--stamp-red);">Arbeitsauftrag:</strong><br>
             1. <strong>Lest</strong> die drei Dossiers (A, B, C).<br>
-            2. <strong>Fasst zusammen</strong> und <strong>erklärt</strong>, wie sich der Hintergrund im Drama wiederfinden lässt.
+            2. <strong>Markiert</strong> zentrale Informationen.<br>
+            3. <strong>Fasst zusammen</strong> und <strong>erklärt</strong>, wie sich der Hintergrund im Drama wiederfinden lässt.
         </div>
         <div class="btn-group" style="max-width: 400px; width: 100%; margin-top: 30px;">
             <button class="action-btn" style="background: var(--stamp-red); border-color: var(--stamp-red);" onclick="showSlide(6)">Zum Dossier-System</button>
@@ -719,7 +692,6 @@
     </div>
 </div>
 
-<!-- SLIDE 6: DOSSIER A -->
 <div class="slide-container game-slide" id="slide6">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -758,7 +730,6 @@
     </div>
 </div>
 
-<!-- SLIDE 7: DOSSIER B -->
 <div class="slide-container game-slide" id="slide7">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -798,7 +769,6 @@
     </div>
 </div>
 
-<!-- SLIDE 8: DOSSIER C -->
 <div class="slide-container game-slide" id="slide8">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -841,7 +811,6 @@
     </div>
 </div>
 
-<!-- SLIDE 9: KONTEXT-PFAD -->
 <div class="slide-container game-slide" id="slide9">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -861,8 +830,7 @@
         </div>
 
         <div id="path-card-pool" ondragover="pathAllowDrop(event)" ondrop="pathDrop(event)">
-            <!-- Pool filled by JS -->
-        </div>
+            </div>
 
         <div class="path-container">
             <div class="path-box">
@@ -918,11 +886,6 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- LEVEL 3 – SCHULDWAAGEN & FINALE                              -->
-<!-- ============================================================ -->
-
-<!-- SLIDE 10: LEVEL 3 INTRO -->
 <div class="slide-container game-slide" id="slide10">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -943,7 +906,6 @@
     </div>
 </div>
 
-<!-- SLIDE 11: BEWEISRAUM ÜBERSICHT -->
 <div class="slide-container game-slide" id="slide11">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -992,7 +954,6 @@
     </div>
 </div>
 
-<!-- SLIDE 12: MÖBIUS URTEIL -->
 <div class="slide-container game-slide" id="slide12">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -1046,7 +1007,6 @@
     </div>
 </div>
 
-<!-- SLIDE 13: NEWTON URTEIL -->
 <div class="slide-container game-slide" id="slide13">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -1100,7 +1060,6 @@
     </div>
 </div>
 
-<!-- SLIDE 14: EINSTEIN URTEIL -->
 <div class="slide-container game-slide" id="slide14">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -1154,7 +1113,6 @@
     </div>
 </div>
 
-<!-- SLIDE 15: ABSCHLUSSURTEIL -->
 <div class="slide-container game-slide" id="slide15">
     <div class="slide-header-area">
         <div class="header-nav">
@@ -1181,9 +1139,6 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- SLIDE 16: POST-FRAGEBOGEN (Modernes Design)                  -->
-<!-- ============================================================ -->
 <div class="slide-container modern-survey" id="slide16">
     <div class="modern-header">
         <h2>Post-Erhebung & Evaluation</h2>
@@ -1197,14 +1152,12 @@
         </div>
 
         <form id="post_survey_form" action="https://formspree.io/f/mqeoeaoq" method="POST">
-            <!-- Versteckte Felder -->
             <input type="hidden" name="Erhebungszeitpunkt" value="Post-Fragebogen (Nach dem Spiel)">
             <input type="hidden" name="Urteilscode" id="hidden_code_input" value="">
             <input type="hidden" name="Interviewcode" id="post_hidden_code" value="">
             <input type="hidden" name="Alter" id="post_hidden_age" value="">
             <input type="hidden" name="Geschlecht" id="post_hidden_gender" value="">
 
-            <!-- 1. Kriterien guten Unterrichts & Gameful Experience -->
             <div class="modern-card">
                 <h3>Evaluation des Moduls</h3>
                 <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Wie sehr stimmst du den folgenden Aussagen zu?</p>
@@ -1221,7 +1174,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Helmke / Unterricht -->
                             <tr>
                                 <td>Es fiel mir einfach/leicht, mich über längere Zeit auf einen komplizierten Text zu konzentrieren.</td>
                                 <td class="center"><input type="radio" name="Post_Konzentration" value="4" required></td>
@@ -1335,7 +1287,6 @@
                                 <td class="center"><input type="radio" name="Post_Passung" value="1"></td>
                             </tr>
                             
-                            <!-- GAMEX Kriterien -->
                             <tr style="border-top: 2px solid #cbd5e1;">
                                 <td style="color: var(--modern-primary); font-weight: 600;">GAMEX: Das Spiel hat mir Spaß gemacht.</td>
                                 <td class="center"><input type="radio" name="GAMEX_Freude" value="4" required></td>
@@ -1362,7 +1313,6 @@
                 </div>
             </div>
 
-            <!-- 2. Benotung & Akzeptanz -->
             <div class="modern-card">
                 <h3>Abschließende Bewertung</h3>
                 
@@ -1600,7 +1550,7 @@
         }
     }
 
-   function validatePathAndProceed() {
+    function validatePathAndProceed() {
         // Wir prüfen, ob in jeder Zone genau eine Karte liegt (children[0])
         const z1 = document.getElementById('path-zone-1').children[0];
         const z2 = document.getElementById('path-zone-2').children[0];
@@ -1650,26 +1600,6 @@
         }
 
         // Wenn alles fehlerfrei ist: Weiter-Button anzeigen!
-        err.style.display = 'none';
-        document.getElementById('btn-path-validate').style.display = 'none';
-        document.getElementById('btn-path-next').style.display = 'inline-block';
-    }
-
-        const hasContext = /(kalt|krieg|atom|bedrohung|waffe)/.test(txt);
-        const hasEffect = /(angst|druck|misstrauen|panik|furcht)/.test(txt);
-        const hasDrama = /(geheim|sanatorium|mord|physiker|möbius|irrenhaus)/.test(txt);
-
-        let missing = [];
-        if (!hasContext) missing.push("Kontextwort (z. B. Kalter Krieg, Atombombe)");
-        if (!hasEffect) missing.push("Wirkungswort (z. B. Angst, Druck)");
-        if (!hasDrama) missing.push("Dramawort (z. B. Geheimhaltung, Sanatorium, Möbius)");
-
-        if (missing.length > 0) {
-            err.innerHTML = "FEHLER: DEINE ERKLÄRUNG IST UNVOLLSTÄNDIG. ES FEHLT:<br> - " + missing.join("<br> - ");
-            err.style.display = 'block';
-            return;
-        }
-
         err.style.display = 'none';
         document.getElementById('btn-path-validate').style.display = 'none';
         document.getElementById('btn-path-next').style.display = 'inline-block';
