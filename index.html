@@ -1597,23 +1597,60 @@
         }
     }
 
-    function validatePathAndProceed() {
-        const z1 = document.getElementById('path-zone-1').children.length;
-        const z2 = document.getElementById('path-zone-2').children.length;
-        const z3 = document.getElementById('path-zone-3').children.length;
+   function validatePathAndProceed() {
+        // Wir prüfen, ob in jeder Zone genau eine Karte liegt (children[0])
+        const z1 = document.getElementById('path-zone-1').children[0];
+        const z2 = document.getElementById('path-zone-2').children[0];
+        const z3 = document.getElementById('path-zone-3').children[0];
         const txt = document.getElementById('path-explanation').value.toLowerCase().trim();
         const err = document.getElementById('error_path');
 
-        if(z1 === 0 || z2 === 0 || z3 === 0) {
+        // 1. Check: Sind alle 3 Boxen gefüllt?
+        if(!z1 || !z2 || !z3) {
             err.innerText = "FEHLER: BITTE IN JEDEN DER 3 SCHRITTE EINE KARTE ZIEHEN.";
             err.style.display = 'block';
             return;
         }
+
+        // 2. NEU: Strenge Prüfung auf die exakt richtigen Karten
+        const validZ1 = ['p1', 'p2'];
+        const validZ2 = ['p3', 'p4'];
+        const validZ3 = ['p5', 'p6', 'p7'];
+
+        if (!validZ1.includes(z1.id) || !validZ2.includes(z2.id) || !validZ3.includes(z3.id)) {
+            err.innerText = "FEHLER: DER PFAD IST UNLOGISCH. PRÜFE, OB DIE KARTEN WIRKLICH ZUM JEWEILIGEN SCHRITT (KONTEXT, DENKEN ODER HANDELN) PASSEN.";
+            err.style.display = 'block';
+            return;
+        }
+
+        // 3. Check: Ist der Text lang genug?
         if(txt.length < 20) {
             err.innerText = "FEHLER: ERKLÄRUNG ZU KURZ (MIND. 20 ZEICHEN).";
             err.style.display = 'block';
             return;
         }
+
+        // 4. Check: Enthält der Text die nötigen Verknüpfungswörter?
+        const hasContext = /(kalt|krieg|atom|bedrohung|waffe)/.test(txt);
+        const hasEffect = /(angst|druck|misstrauen|panik|furcht)/.test(txt);
+        const hasDrama = /(geheim|sanatorium|mord|physiker|möbius|irrenhaus)/.test(txt);
+
+        let missing = [];
+        if (!hasContext) missing.push("Kontextwort (z. B. Kalter Krieg, Atombombe)");
+        if (!hasEffect) missing.push("Wirkungswort (z. B. Angst, Druck)");
+        if (!hasDrama) missing.push("Dramawort (z. B. Geheimhaltung, Sanatorium, Möbius)");
+
+        if (missing.length > 0) {
+            err.innerHTML = "FEHLER: DEINE ERKLÄRUNG IST UNVOLLSTÄNDIG. ES FEHLT:<br> - " + missing.join("<br> - ");
+            err.style.display = 'block';
+            return;
+        }
+
+        // Wenn alles fehlerfrei ist: Weiter-Button anzeigen!
+        err.style.display = 'none';
+        document.getElementById('btn-path-validate').style.display = 'none';
+        document.getElementById('btn-path-next').style.display = 'inline-block';
+    }
 
         const hasContext = /(kalt|krieg|atom|bedrohung|waffe)/.test(txt);
         const hasEffect = /(angst|druck|misstrauen|panik|furcht)/.test(txt);
