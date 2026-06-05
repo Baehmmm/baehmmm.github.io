@@ -1437,44 +1437,47 @@
     }
 
     // Prä-Fragebogen Logik & Validierung
-    document.getElementById('pre_survey_form').addEventListener('submit', function(e) {
-        e.preventDefault(); // Verhindert das Neuladen der Seite
+    function submitPreSurvey() {
+        const form = document.getElementById('pre_survey_form');
         
+        // 1. Prüfen, ob alle Pflichtfelder ausgefüllt sind (zeigt die typischen Browser-Warnungen)
+        if (!form.reportValidity()) {
+            return; 
+        }
+
+        // 2. Altersüberprüfung 16 - 20
         const age = parseInt(document.getElementById('pre_age').value);
         const ageError = document.getElementById('error_pre_age');
         
-        // Altersüberprüfung 16 - 20
         if (isNaN(age) || age < 16 || age > 20) {
             ageError.style.display = 'block';
             return;
         }
         ageError.style.display = 'none';
 
+        // 3. Daten lokal zwischenspeichern
         saveDemoData();
 
-        // Sende Daten im Hintergrund via Fetch an Formspree
-        const form = e.target;
-        const data = new FormData(form);
-        
-        // Wir ändern den Button-Text kurz, damit man sieht, dass etwas passiert
+        // 4. Button sperren, damit nicht doppelt geklickt wird
         const btn = document.getElementById('btn_submit_pre');
-        const originalText = btn.innerText;
         btn.innerText = "Daten werden gesendet...";
         btn.disabled = true;
 
+        // 5. Lautlos im Hintergrund an Formspree senden
+        const data = new FormData(form);
         fetch(form.action, {
-            method: form.method,
+            method: 'POST',
             body: data,
             headers: { 'Accept': 'application/json' }
         }).then(response => {
-            // Nach dem Absenden direkt ins Spiel (Slide 1) springen
+            // Nach erfolgreichem Senden direkt Spiel starten
             showSlide(1);
         }).catch(error => {
-            console.error(error);
-            // Fallback: Trotz Fehler ins Spiel springen, damit die Stunde weitergeht
+            console.error("Sende-Fehler:", error);
+            // Auch bei einem Netzwerkfehler das Spiel starten, damit der Unterricht nicht stockt
             showSlide(1);
         });
-    });
+    }
 
     function showSlide(n) {
         document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
