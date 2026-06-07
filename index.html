@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fallakte: Die Physiker & Evaluation</title>
+    <title>Fallakte: Die Physiker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         /* =========================================
-           1. SPIEL-STIL (60er-Jahre Ermittlungsakte)
+           SPIEL-STIL (60er-Jahre Ermittlungsakte)
            ========================================= */
         :root {
             --paper-bg: #fdfaf2;        
@@ -18,13 +18,6 @@
             --stamp-red: #a81c1c;      
             --typewriter-blue: #324b6b;
             --slide-width: 1200px;
-            
-            /* NEU: Variablen für die modernen Fragebögen */
-            --modern-bg: #f8fafc;
-            --modern-card: #ffffff;
-            --modern-primary: #2563eb;
-            --modern-text: #334155;
-            --modern-border: #e2e8f0;
         }
 
         * { box-sizing: border-box; }
@@ -44,11 +37,7 @@
             color: var(--ink-black);
         }
 
-        /* Spiel-spezifische Typografie (Courier) */
-        .game-font, .game-slide h1, .game-slide h2, .game-slide h3, .game-slide h4, 
-        .typewriter, .game-slide input[type="text"], .game-slide textarea, 
-        .game-slide select, .game-slide .action-btn, .game-slide .tab, 
-        .game-slide .step-indicator, .game-slide .scale-label {
+        h1, h2, h3, h4, .typewriter, input[type="text"], textarea, select, .action-btn, .tab, .step-indicator, .scale-label {
             font-family: 'Courier New', Courier, monospace !important;
         }
 
@@ -60,7 +49,7 @@
             border: 1px solid #b5a68d; position: relative;
         }
         
-        .game-slide::before {
+        .slide-container::before {
             content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 2px;
             border-left: 2px solid #d4c5ab; border-right: 2px solid #d4c5ab; z-index: 1;
         }
@@ -83,10 +72,10 @@
         .progress-fill { height: 100%; background: var(--typewriter-blue); width: 5%; transition: width 0.5s ease; }
         .step-indicator { font-weight: bold; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
 
-        .game-slide h1, .game-slide h2, .game-slide h3, .game-slide h4 { margin: 0; font-weight: bold; line-height: 1.2; text-transform: uppercase; }
-        .game-slide h1 { font-size: 45px; letter-spacing: -1px; text-align: center; margin-bottom: 20px; border: 4px solid var(--ink-black); padding: 10px; display: inline-block; }
+        h1, h2, h3, h4 { margin: 0; font-weight: bold; line-height: 1.2; text-transform: uppercase; }
+        h1 { font-size: 45px; letter-spacing: -1px; text-align: center; margin-bottom: 20px; border: 4px solid var(--ink-black); padding: 10px; display: inline-block; }
         .slide-title { font-size: 30px; margin-bottom: 15px; }
-        .game-slide p, .game-slide li { font-size: 18px; color: var(--ink-black); margin-top: 0; line-height: 1.6; }
+        p, li { font-size: 18px; color: var(--ink-black); margin-top: 0; line-height: 1.6; }
         
         .secret-stamp {
             color: var(--stamp-red); border: 4px solid var(--stamp-red); transform: rotate(-5deg); padding: 5px 15px;
@@ -104,15 +93,15 @@
         .help-btn { background: transparent; border: 2px solid var(--ink-black); color: var(--ink-black); padding: 8px 15px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.2s; box-shadow: 2px 2px 0 var(--ink-black); margin-bottom: 10px; font-family: 'Courier New';}
         .help-btn:hover { background: var(--ink-black); color: var(--paper-bg); transform: translate(2px, 2px); box-shadow: 0 0 0 var(--ink-black); }
 
-        .game-slide input[type="text"], .game-slide textarea, .game-slide select {
+        input[type="text"], textarea, select {
             width: 100%; padding: 10px 15px; background: rgba(255,255,255,0.5); 
             border: 1px solid var(--ink-dim); border-bottom: 3px solid var(--ink-black);
             color: var(--typewriter-blue); font-size: 18px; 
             margin-top: 5px; margin-bottom: 20px; resize: vertical; transition: 0.2s;
         }
-        .game-slide input:focus, .game-slide textarea:focus, .game-slide select:focus { outline: none; border-bottom: 3px solid var(--stamp-red); background: #fff; }
+        input:focus, textarea:focus, select:focus { outline: none; border-bottom: 3px solid var(--stamp-red); background: #fff; }
         
-        .game-slide label { font-weight: bold; font-family: 'Courier New'; font-size: 16px; color: var(--ink-black); }
+        label { font-weight: bold; font-family: 'Courier New'; font-size: 16px; color: var(--ink-black); }
 
         .btn-group { display: flex; gap: 15px; margin-top: auto; padding-top: 20px; }
         .action-btn {
@@ -161,335 +150,11 @@
         .path-drop-zone .path-drag-card { width: 100%; box-sizing: border-box; padding: 8px 5px; font-size: 12px;}
         #path-card-pool { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 15px; border: 2px dashed var(--ink-dim); min-height: 60px; background: rgba(0,0,0,0.03); margin-bottom: 20px; }
         .arrow-container { display: flex; align-items: center; font-size: 28px; color: var(--stamp-red); font-weight: bold; }
-
-        /* =========================================
-           2. MODERN STIL (Für die Fragebögen)
-           ========================================= */
-        .modern-survey {
-            background-color: var(--modern-bg);
-            border: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !important;
-            color: var(--modern-text);
-        }
-        .modern-survey::before { display: none; } /* Keine vertikalen Akten-Linien */
-
-        .modern-header {
-            background: #fff;
-            padding: 30px 40px;
-            border-bottom: 1px solid var(--modern-border);
-            text-align: center;
-        }
-        .modern-header h2 {
-            font-family: inherit !important;
-            font-size: 28px;
-            color: var(--modern-primary);
-            margin: 0;
-            text-transform: none;
-            letter-spacing: normal;
-            border: none;
-            font-weight: 700;
-        }
-        .modern-header p {
-            color: #64748b;
-            font-size: 16px;
-            margin-top: 8px;
-            margin-bottom: 0;
-            font-family: inherit !important;
-        }
-
-        .modern-content {
-            padding: 40px;
-            overflow-y: auto;
-            flex-grow: 1;
-            background: var(--modern-bg);
-        }
-        
-        .modern-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            margin-bottom: 30px;
-            border: 1px solid var(--modern-border);
-        }
-
-        .modern-card h3 {
-            font-family: inherit !important;
-            font-size: 20px;
-            color: #0f172a;
-            margin-top: 0;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--modern-bg);
-            padding-bottom: 10px;
-            text-transform: none;
-        }
-
-        .modern-form-group { margin-bottom: 20px; }
-        .modern-form-group label {
-            display: block;
-            font-family: inherit !important;
-            font-weight: 600;
-            font-size: 14px;
-            color: #475569;
-            margin-bottom: 8px;
-        }
-        .modern-form-group input[type="text"],
-        .modern-form-group input[type="number"],
-        .modern-form-group select,
-        .modern-form-group textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-family: inherit !important;
-            font-size: 15px;
-            background: #fff;
-            color: #0f172a;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            margin: 0;
-        }
-        .modern-form-group input:focus, .modern-form-group textarea:focus, .modern-form-group select:focus {
-            outline: none;
-            border-color: var(--modern-primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .modern-radio-group { display: flex; gap: 20px; align-items: center; }
-        .modern-radio-group label { font-weight: normal; font-size: 15px; margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .modern-radio-group input[type="radio"] { cursor: pointer; width: 18px; height: 18px; accent-color: var(--modern-primary); }
-
-        .modern-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
-        .modern-table th { background: #f1f5f9; padding: 12px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #cbd5e1; }
-        .modern-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-        .modern-table tr:hover td { background-color: #f8fafc; }
-        .modern-table input[type="radio"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--modern-primary); }
-        .modern-table .center { text-align: center; }
-
-        .modern-btn {
-            background-color: var(--modern-primary);
-            color: #fff;
-            font-family: inherit !important;
-            font-size: 16px;
-            font-weight: 600;
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            display: block;
-            width: 100%;
-            text-align: center;
-        }
-        .modern-btn:hover { background-color: #1d4ed8; }
-        .modern-btn:active { transform: translateY(2px); }
-
-        .modern-error {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            margin-top: 8px;
-            display: none;
-            border: 1px solid #f87171;
-            font-family: inherit !important;
-            letter-spacing: normal;
-        }
-
-        /* Result Code im Post-Fragebogen */
-        .modern-result-box {
-            background: #eff6ff;
-            border: 2px dashed var(--modern-primary);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .modern-result-box h4 { margin: 0 0 10px 0; color: #1e3a8a; font-family: inherit !important; text-transform: none; font-size: 18px;}
-        .modern-result-box .the-code { font-size: 24px; font-weight: 800; color: var(--modern-primary); letter-spacing: 2px; font-family: monospace !important; }
-
     </style>
 </head>
 <body>
 
-<div class="slide-container modern-survey active" id="slide0">
-    <div class="modern-header">
-        <h2>Prä-Erhebung zur Unterrichtseinheit</h2>
-        <p>Bitte fülle diesen wissenschaftlichen Fragebogen gewissenhaft aus, bevor das Modul startet.</p>
-    </div>
-    
-    <div class="modern-content">
-        <form id="pre_survey_form" action="https://formspree.io/f/mqeoeaoq" method="POST">
-            <input type="hidden" name="Erhebungszeitpunkt" value="Prä-Fragebogen (Vor dem Spiel)">
-
-            <div class="modern-card">
-                <h3>Soziodemographische Angaben</h3>
-                
-                <div class="modern-form-group">
-                    <label>Interviewcode (1. Buchstabe des Vornamens + die ersten 2 Buchstaben des Nachnamens, z.B. Max Mustermann = MMU)</label>
-                    <input type="text" id="pre_code" name="Interviewcode" placeholder="Dein Code..." required autocomplete="off">
-                </div>
-
-                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div class="modern-form-group" style="flex: 1; min-width: 150px;">
-                        <label>Alter</label>
-                        <input type="number" id="pre_age" name="Alter" placeholder="z.B. 16" required>
-                        <div id="error_pre_age" class="modern-error">LÜGE</div>
-                    </div>
-                    
-                    <div class="modern-form-group" style="flex: 2; min-width: 250px;">
-                        <label>Geschlecht</label>
-                        <div class="modern-radio-group" style="margin-top: 15px;">
-                            <label><input type="radio" name="Geschlecht" value="weiblich" required> weiblich</label>
-                            <label><input type="radio" name="Geschlecht" value="männlich" required> männlich</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modern-card">
-                <h3>Einschätzung zum bisherigen Unterricht</h3>
-                <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Wie sehr stimmst du den folgenden Aussagen zu?</p>
-                
-                <div style="overflow-x: auto;">
-                    <table class="modern-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 50%;">Aussage</th>
-                                <th class="center">Ja, voll<br>(4)</th>
-                                <th class="center">Ja, eher<br>(3)</th>
-                                <th class="center">Eher nicht<br>(2)</th>
-                                <th class="center">Gar nicht<br>(1)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Es fällt mir einfach/leicht, mich über längere Zeit auf einen komplizierten Text zu konzentrieren.</td>
-                                <td class="center"><input type="radio" name="Prae_Konzentration" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Konzentration" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Konzentration" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Konzentration" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich arbeite gerne mit meinen Mitschülern zusammen, um Aufgaben zu lösen.</td>
-                                <td class="center"><input type="radio" name="Prae_SozEingebundenheit" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_SozEingebundenheit" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_SozEingebundenheit" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_SozEingebundenheit" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich freue mich im Allgemeinen auf den Deutschunterricht.</td>
-                                <td class="center"><input type="radio" name="Prae_Lernfreude" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Lernfreude" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Lernfreude" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Lernfreude" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Im Deutschunterricht arbeite ich meistens freiwillig und gerne mit.</td>
-                                <td class="center"><input type="radio" name="Prae_Intrinsisch" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Intrinsisch" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Intrinsisch" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Intrinsisch" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich kann im Deutschunterricht durch bestimmte Aufgaben motiviert werden, mitzuarbeiten.</td>
-                                <td class="center"><input type="radio" name="Prae_Extrinsisch" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Extrinsisch" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Extrinsisch" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Extrinsisch" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich weiß zu Beginn der Stunde immer genau, was das Lernziel ist.</td>
-                                <td class="center"><input type="radio" name="Prae_Zielklarheit" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Zielklarheit" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Zielklarheit" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Zielklarheit" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich bekomme im Unterricht eine Rückmeldung, ob meine Lösung richtig oder gut ist.</td>
-                                <td class="center"><input type="radio" name="Prae_Rueckmeldung" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Rueckmeldung" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Rueckmeldung" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Rueckmeldung" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich habe das Gefühl, dass ich die Aufgaben in diesem Fach gut meistern kann.</td>
-                                <td class="center"><input type="radio" name="Prae_Selbstwirksamkeit" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Selbstwirksamkeit" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Selbstwirksamkeit" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Selbstwirksamkeit" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich habe im Unterricht das Gefühl, selbst entscheiden zu können, wie ich lerne.</td>
-                                <td class="center"><input type="radio" name="Prae_Autonomie" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Autonomie" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Autonomie" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Autonomie" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Im Deutschunterricht bin ich die meiste Zeit aktiv bei der Sache.</td>
-                                <td class="center"><input type="radio" name="Prae_Aktivitaet" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Aktivitaet" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Aktivitaet" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Aktivitaet" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Wenn ich eine Aufgabe im Deutschunterricht löse, vergesse ich manchmal die Zeit.</td>
-                                <td class="center"><input type="radio" name="Prae_Flow" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Flow" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Flow" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Flow" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich finde die bisherige Art, wie wir Aufgaben im Unterricht bearbeiten, abwechslungsreich.</td>
-                                <td class="center"><input type="radio" name="Prae_Methodenvielfalt" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Methodenvielfalt" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Methodenvielfalt" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Methodenvielfalt" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Im Deutschunterricht kann ich das Gelernte an verschiedenen Aufgaben üben, sodass ich es mir gut merke.</td>
-                                <td class="center"><input type="radio" name="Prae_Ueben" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Ueben" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Ueben" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Ueben" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Die Aufgaben sind genau richtig – nicht zu leicht und nicht zu schwer.</td>
-                                <td class="center"><input type="radio" name="Prae_Passung" value="4" required></td>
-                                <td class="center"><input type="radio" name="Prae_Passung" value="3"></td>
-                                <td class="center"><input type="radio" name="Prae_Passung" value="2"></td>
-                                <td class="center"><input type="radio" name="Prae_Passung" value="1"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="modern-card">
-                <h3>Bewertung des Deutschunterrichts</h3>
-                <div class="modern-form-group">
-                    <label>Wie bewertest du den Deutschunterricht in diesem Schuljahr bisher?</label>
-                    <select name="Prae_Note_Deutschunterricht_Allgemein" required>
-                        <option value="" disabled selected>Bitte wählen...</option>
-                        <option value="1">Sehr gut (Note 1)</option>
-                        <option value="2">Gut (Note 2)</option>
-                        <option value="3">Befriedigend (Note 3)</option>
-                        <option value="4">Ausreichend (Note 4)</option>
-                        <option value="5">Mangelhaft (Note 5)</option>
-                        <option value="6">Unzureichend (Note 6)</option>
-                    </select>
-                </div>
-            </div>
-
-            <button type="button" class="modern-btn" id="btn_submit_pre" onclick="submitPreSurvey()">Daten absenden & Intervention starten</button>
-        </form>
-    </div>
-</div>
-
-<div class="slide-container game-slide" id="slide1">
+<div class="slide-container active" id="slide1">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Akte: Eröffnet</div>
@@ -510,7 +175,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide2">
+<div class="slide-container" id="slide2">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Level 1 // Mission</div>
@@ -530,7 +195,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide3">
+<div class="slide-container" id="slide3">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Level 1 // Profiler-Akten</div>
@@ -632,7 +297,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide4">
+<div class="slide-container" id="slide4">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Level 1 // Abschluss</div>
@@ -666,7 +331,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide5">
+<div class="slide-container" id="slide5">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Level 2 // Intro</div>
@@ -692,7 +357,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide6">
+<div class="slide-container" id="slide6">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Dossier A // Autor:innen</div>
@@ -730,7 +395,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide7">
+<div class="slide-container" id="slide7">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Dossier B // Historiker:innen</div>
@@ -769,7 +434,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide8">
+<div class="slide-container" id="slide8">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Dossier C // Wissenschaftler:innen</div>
@@ -811,7 +476,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide9">
+<div class="slide-container" id="slide9">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Archiv // Pfad</div>
@@ -886,7 +551,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide10">
+<div class="slide-container" id="slide10">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Level 3 // Urteil</div>
@@ -906,7 +571,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide11">
+<div class="slide-container" id="slide11">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Level 3 // Beweisraum</div>
@@ -954,7 +619,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide12">
+<div class="slide-container" id="slide12">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Level 3 // Urteil</div>
@@ -1007,7 +672,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide13">
+<div class="slide-container" id="slide13">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Level 3 // Urteil</div>
@@ -1060,7 +725,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide14">
+<div class="slide-container" id="slide14">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Level 3 // Urteil</div>
@@ -1113,7 +778,7 @@
     </div>
 </div>
 
-<div class="slide-container game-slide" id="slide15">
+<div class="slide-container" id="slide15">
     <div class="slide-header-area">
         <div class="header-nav">
             <div class="step-indicator">Level 3 // Finale</div>
@@ -1139,295 +804,31 @@
     </div>
 </div>
 
-<div class="slide-container modern-survey" id="slide16">
-    <div class="modern-header">
-        <h2>Post-Erhebung & Evaluation</h2>
-        <p>Vielen Dank für die Teilnahme. Bitte fülle zum Abschluss diesen Bogen aus.</p>
-    </div>
-    
-    <div class="modern-content">
-        <div class="modern-result-box">
-            <h4>Dein generierter Urteilscode aus dem Spiel:</h4>
-            <div id="code_display" class="the-code"></div>
+<div class="slide-container" id="slide16">
+    <div class="slide-header-area">
+        <div class="header-nav">
+            <div class="step-indicator">System // Abschluss</div>
+            <div class="progress-wrapper"><div class="progress-fill" style="width: 100%"></div></div>
+            <div class="step-indicator">Dienstaufsicht</div>
         </div>
-
-        <form id="post_survey_form" action="https://formspree.io/f/mqeoeaoq" method="POST">
-            <input type="hidden" name="Erhebungszeitpunkt" value="Post-Fragebogen (Nach dem Spiel)">
-            <input type="hidden" name="Urteilscode" id="hidden_code_input" value="">
-            <input type="hidden" name="Interviewcode" id="post_hidden_code" value="">
-            <input type="hidden" name="Alter" id="post_hidden_age" value="">
-            <input type="hidden" name="Geschlecht" id="post_hidden_gender" value="">
-
-            <div class="modern-card">
-                <h3>Evaluation des Moduls</h3>
-                <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Wie sehr stimmst du den folgenden Aussagen zu?</p>
-                
-                <div style="overflow-x: auto;">
-                    <table class="modern-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 50%;">Aussage</th>
-                                <th class="center">Ja, voll<br>(4)</th>
-                                <th class="center">Ja, eher<br>(3)</th>
-                                <th class="center">Eher nicht<br>(2)</th>
-                                <th class="center">Gar nicht<br>(1)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Es fiel mir einfach/leicht, mich über längere Zeit auf einen komplizierten Text zu konzentrieren.</td>
-                                <td class="center"><input type="radio" name="Post_Konzentration" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Konzentration" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Konzentration" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Konzentration" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich habe gerne mit meinen Mitschülern zusammengearbeitet, um Aufgaben zu lösen.</td>
-                                <td class="center"><input type="radio" name="Post_SozEingebundenheit" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_SozEingebundenheit" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_SozEingebundenheit" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_SozEingebundenheit" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich habe mich auf die Stunden zu den Leveln gefreut.</td>
-                                <td class="center"><input type="radio" name="Post_Lernfreude" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Lernfreude" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Lernfreude" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Lernfreude" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich habe gerne und freiwillig mitgearbeitet.</td>
-                                <td class="center"><input type="radio" name="Post_Intrinsisch" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Intrinsisch" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Intrinsisch" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Intrinsisch" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Das Spiel hat mich motiviert, mitzuarbeiten.</td>
-                                <td class="center"><input type="radio" name="Post_Extrinsisch" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Extrinsisch" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Extrinsisch" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Extrinsisch" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich wusste zu Beginn der Stunde genau, was das Lernziel war.</td>
-                                <td class="center"><input type="radio" name="Post_Zielklarheit" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Zielklarheit" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Zielklarheit" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Zielklarheit" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich habe Rückmeldungen bekommen, ob meine Lösung richtig oder gut ist.</td>
-                                <td class="center"><input type="radio" name="Post_Rueckmeldung" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Rueckmeldung" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Rueckmeldung" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Rueckmeldung" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich hatte das Gefühl, dass ich die Aufgaben gut meistern konnte.</td>
-                                <td class="center"><input type="radio" name="Post_Selbstwirksamkeit" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Selbstwirksamkeit" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Selbstwirksamkeit" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Selbstwirksamkeit" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich hatte im Unterricht das Gefühl, selbst entscheiden zu können, wie ich lerne.</td>
-                                <td class="center"><input type="radio" name="Post_Autonomie" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Autonomie" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Autonomie" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Autonomie" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich habe in der Stunde mehr Aufgaben bearbeitet als in einer normalen Deutschstunde.</td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet1" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet1" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet1" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet1" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Durch das Spiel habe ich mehr selbst gearbeitet als sonst im Deutschunterricht.</td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet2" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet2" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet2" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet2" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>In der Stunde war ich die meiste Zeit aktiv bei der Sache.</td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet3" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet3" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet3" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Aktivitaet3" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Wenn ich die Aufgaben im Spiel bearbeitet habe, habe ich die Zeit manchmal vergessen.</td>
-                                <td class="center"><input type="radio" name="Post_Flow" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Flow" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Flow" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Flow" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Ich fand die Art der Aufgaben abwechslungsreich.</td>
-                                <td class="center"><input type="radio" name="Post_Methodenvielfalt" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Methodenvielfalt" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Methodenvielfalt" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Methodenvielfalt" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Im Spiel konnte ich das Gelernte an verschiedenen Aufgaben üben, sodass ich es mir gut merken konnte.</td>
-                                <td class="center"><input type="radio" name="Post_Ueben" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Ueben" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Ueben" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Ueben" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td>Die Aufgaben waren genau richtig – nicht zu leicht und nicht zu schwer.</td>
-                                <td class="center"><input type="radio" name="Post_Passung" value="4" required></td>
-                                <td class="center"><input type="radio" name="Post_Passung" value="3"></td>
-                                <td class="center"><input type="radio" name="Post_Passung" value="2"></td>
-                                <td class="center"><input type="radio" name="Post_Passung" value="1"></td>
-                            </tr>
-                            
-                            <tr style="border-top: 2px solid #cbd5e1;">
-                                <td style="color: var(--modern-primary); font-weight: 600;">GAMEX: Das Spiel hat mir Spaß gemacht.</td>
-                                <td class="center"><input type="radio" name="GAMEX_Freude" value="4" required></td>
-                                <td class="center"><input type="radio" name="GAMEX_Freude" value="3"></td>
-                                <td class="center"><input type="radio" name="GAMEX_Freude" value="2"></td>
-                                <td class="center"><input type="radio" name="GAMEX_Freude" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td style="color: var(--modern-primary); font-weight: 600;">GAMEX: Beim Spiel konnte ich eigene Ideen und Lösungswege ausprobieren.</td>
-                                <td class="center"><input type="radio" name="GAMEX_Kreativ" value="4" required></td>
-                                <td class="center"><input type="radio" name="GAMEX_Kreativ" value="3"></td>
-                                <td class="center"><input type="radio" name="GAMEX_Kreativ" value="2"></td>
-                                <td class="center"><input type="radio" name="GAMEX_Kreativ" value="1"></td>
-                            </tr>
-                            <tr>
-                                <td style="color: var(--modern-primary); font-weight: 600;">GAMEX: Während des Spiels habe ich mich wohlgefühlt und war nicht genervt.</td>
-                                <td class="center"><input type="radio" name="GAMEX_Wohlgefuehl" value="4" required></td>
-                                <td class="center"><input type="radio" name="GAMEX_Wohlgefuehl" value="3"></td>
-                                <td class="center"><input type="radio" name="GAMEX_Wohlgefuehl" value="2"></td>
-                                <td class="center"><input type="radio" name="GAMEX_Wohlgefuehl" value="1"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="modern-card">
-                <h3>Abschließende Bewertung</h3>
-                
-                <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
-                    <div class="modern-form-group" style="flex: 1; min-width: 250px;">
-                        <label>Wie bewertest du den Deutschunterricht in diesem Schuljahr bisher?</label>
-                        <select name="Post_Note_Deutschunterricht" required>
-                            <option value="" disabled selected>Bitte wählen...</option>
-                            <option value="1">Sehr gut (Note 1)</option>
-                            <option value="2">Gut (Note 2)</option>
-                            <option value="3">Befriedigend (Note 3)</option>
-                            <option value="4">Ausreichend (Note 4)</option>
-                            <option value="5">Mangelhaft (Note 5)</option>
-                            <option value="6">Unzureichend (Note 6)</option>
-                        </select>
-                    </div>
-                    <div class="modern-form-group" style="flex: 1; min-width: 250px;">
-                        <label>Wie bewertest du die heutige Stunde?</label>
-                        <select name="Post_Note_Heutige_Stunde" required>
-                            <option value="" disabled selected>Bitte wählen...</option>
-                            <option value="1">Sehr gut (Note 1)</option>
-                            <option value="2">Gut (Note 2)</option>
-                            <option value="3">Befriedigend (Note 3)</option>
-                            <option value="4">Ausreichend (Note 4)</option>
-                            <option value="5">Mangelhaft (Note 5)</option>
-                            <option value="6">Unzureichend (Note 6)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
-                    <div class="modern-form-group" style="flex: 1; min-width: 250px;">
-                        <label>Was hat dir gut gefallen?</label>
-                        <textarea name="Feedback_Positiv" rows="3" required></textarea>
-                    </div>
-                    <div class="modern-form-group" style="flex: 1; min-width: 250px;">
-                        <label>Was hat dir nicht so gut gefallen? Wo hast du einen Verbesserungsvorschlag?</label>
-                        <textarea name="Feedback_Negativ" rows="3" required></textarea>
-                    </div>
-                </div>
-
-                <div class="modern-form-group">
-                    <label>Sollen wir noch einmal eine solche Stunde mit einem Spiel machen?</label>
-                    <div class="modern-radio-group" style="flex-wrap: wrap; margin-top: 10px;">
-                        <label><input type="radio" name="Wiederholung_Gewuenscht" value="4 (Ja, unbedingt)" required> Ja, unbedingt</label>
-                        <label><input type="radio" name="Wiederholung_Gewuenscht" value="3 (Ja, gerne)"> Ja, gerne</label>
-                        <label><input type="radio" name="Wiederholung_Gewuenscht" value="2 (Nein, eher nicht)"> Nein, eher nicht</label>
-                        <label><input type="radio" name="Wiederholung_Gewuenscht" value="1 (Nein, auf keinen Fall)"> Nein, auf keinen Fall</label>
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" class="modern-btn">Evaluation abschließen & Daten senden</button>
-        </form>
+        <h2 class="slide-title">FALL ABGESCHLOSSEN</h2>
+    </div>
+    <div class="slide-content-area" style="align-items: center; text-align: center;">
+        <div class="secret-stamp" style="margin-bottom: 30px; margin-top: 30px;">ARCHIVIERT</div>
+        <h2>DEIN URTEILSCODE:</h2>
+        <div id="code_display" style="font-size: 40px; color: var(--stamp-red); font-family: 'Courier New', monospace; font-weight: bold; letter-spacing: 2px; margin: 20px 0; padding: 20px; background: rgba(168,28,28,0.05); border: 2px dashed var(--stamp-red); display: inline-block;"></div>
+        <p style="margin-top: 20px;">Notiert euch diesen Code für die spätere Besprechung.<br>Die Ermittlungsakte ist hiermit geschlossen.</p>
+        <button class="action-btn btn-secondary" onclick="location.reload()" style="margin-top: 40px; max-width: 300px;">System Neustart</button>
     </div>
 </div>
 
 <script>
-    let currentSlide = 0; // Wir starten jetzt bei Slide 0 (Prä-Fragebogen)
+    let currentSlide = 1; // Startet direkt bei Slide 1 (Akte Eröffnet)
 
     // Variablen für Level 3 Freigabe-Check
     let doneM = false;
     let doneN = false;
     let doneE = false;
-
-    // Speichert den Interviewcode und andere Daten im Browser (für den Post-Fragebogen)
-    function saveDemoData() {
-        sessionStorage.setItem('sc_code', document.getElementById('pre_code').value);
-        sessionStorage.setItem('sc_age', document.getElementById('pre_age').value);
-        const genderEl = document.querySelector('input[name="Geschlecht"]:checked');
-        if (genderEl) sessionStorage.setItem('sc_gender', genderEl.value);
-    }
-
-    // Prä-Fragebogen Logik & Validierung
-    function submitPreSurvey() {
-        const form = document.getElementById('pre_survey_form');
-        
-        // 1. Prüfen, ob alle Pflichtfelder ausgefüllt sind (zeigt die typischen Browser-Warnungen)
-        if (!form.reportValidity()) {
-            return; 
-        }
-
-        // 2. Altersüberprüfung 16 - 20
-        const age = parseInt(document.getElementById('pre_age').value);
-        const ageError = document.getElementById('error_pre_age');
-        
-        if (isNaN(age) || age < 16 || age > 20) {
-            ageError.style.display = 'block';
-            return;
-        }
-        ageError.style.display = 'none';
-
-        // 3. Daten lokal zwischenspeichern
-        saveDemoData();
-
-        // 4. Button sperren, damit nicht doppelt geklickt wird
-        const btn = document.getElementById('btn_submit_pre');
-        btn.innerText = "Daten werden gesendet...";
-        btn.disabled = true;
-
-        // 5. Lautlos im Hintergrund an Formspree senden
-        const data = new FormData(form);
-        fetch(form.action, {
-            method: 'POST',
-            body: data,
-            headers: { 'Accept': 'application/json' }
-        }).then(response => {
-            // Nach erfolgreichem Senden direkt Spiel starten
-            showSlide(1);
-        }).catch(error => {
-            console.error("Sende-Fehler:", error);
-            // Auch bei einem Netzwerkfehler das Spiel starten, damit der Unterricht nicht stockt
-            showSlide(1);
-        });
-    }
 
     function showSlide(n) {
         document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
@@ -1435,7 +836,7 @@
         if(newSlide) {
             newSlide.classList.add('active');
             currentSlide = n;
-            const contentArea = newSlide.querySelector('.slide-content-area, .modern-content');
+            const contentArea = newSlide.querySelector('.slide-content-area');
             if (contentArea) { contentArea.scrollTop = 0; }
         }
         
@@ -1550,7 +951,7 @@
         }
     }
 
-   function validatePathAndProceed() {
+    function validatePathAndProceed() {
         // Wir prüfen, ob in jeder Zone genau eine Karte liegt (children[0])
         const z1 = document.getElementById('path-zone-1').children[0];
         const z2 = document.getElementById('path-zone-2').children[0];
@@ -1604,7 +1005,6 @@
         document.getElementById('btn-path-validate').style.display = 'none';
         document.getElementById('btn-path-next').style.display = 'inline-block';
     }
-
 
     /* LEVEL 3 VALIDATION UND CHECK LOGIC */
     function tryFinishLevel3() {
@@ -1687,21 +1087,9 @@
             codeDisplay.innerText = finalerCode; 
         }
 
-        // Den Code in das unsichtbare Formspree-Feld eintragen
-        const hiddenInput = document.getElementById('hidden_code_input');
-        if (hiddenInput) {
-            hiddenInput.value = finalerCode;
-        }
-
-        // Soziodemographische Daten aus dem Session-Storage in versteckte Felder eintragen
-        document.getElementById('post_hidden_code').value = sessionStorage.getItem('sc_code') || 'unbekannt';
-        document.getElementById('post_hidden_age').value = sessionStorage.getItem('sc_age') || 'unbekannt';
-        document.getElementById('post_hidden_gender').value = sessionStorage.getItem('sc_gender') || 'unbekannt';
-        
-        // Öffnet jetzt Slide 16 (das Evaluations-Protokoll im modernen Stil)
+        // Öffnet jetzt den finalen Abschluss-Bildschirm
         showSlide(16);
     }
-
 </script>
 
 </body>
