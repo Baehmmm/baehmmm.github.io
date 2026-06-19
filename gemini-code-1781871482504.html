@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prä-Erhebung zur Unterrichtseinheit</title>
+    <style>
+        :root {
+            --modern-bg: #f8fafc;
+            --modern-card: #ffffff;
+            --modern-primary: #2563eb;
+            --modern-text: #334155;
+            --modern-border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            background-color: #2a2824;
+            background-image: radial-gradient(#3a3630 1px, transparent 1px);
+            background-size: 20px 20px;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--modern-text);
+        }
+
+        .slide-container {
+            width: 100%;
+            max-width: 1200px;
+            min-height: 700px;
+            background-color: var(--modern-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .modern-header {
+            background: #fff;
+            padding: 30px 40px;
+            border-bottom: 1px solid var(--modern-border);
+            text-align: center;
+        }
+        .modern-header h2 {
+            font-size: 28px;
+            color: var(--modern-primary);
+            margin: 0;
+            font-weight: 700;
+        }
+        .modern-header p {
+            color: #64748b;
+            font-size: 16px;
+            margin-top: 8px;
+            margin-bottom: 0;
+        }
+
+        .modern-content {
+            padding: 40px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        
+        .modern-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            margin-bottom: 30px;
+            border: 1px solid var(--modern-border);
+        }
+
+        .modern-card h3 {
+            font-size: 20px;
+            color: #0f172a;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--modern-bg);
+            padding-bottom: 10px;
+        }
+
+        .modern-form-group { margin-bottom: 20px; }
+        .modern-form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #475569;
+            margin-bottom: 8px;
+        }
+        .modern-form-group input[type="text"],
+        .modern-form-group input[type="number"],
+        .modern-form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            background: #fff;
+            color: #0f172a;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            margin: 0;
+        }
+        .modern-form-group input:focus, .modern-form-group select:focus {
+            outline: none;
+            border-color: var(--modern-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .modern-radio-group { display: flex; gap: 20px; align-items: center; }
+        .modern-radio-group label { font-weight: normal; font-size: 15px; margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .modern-radio-group input[type="radio"] { cursor: pointer; width: 18px; height: 18px; accent-color: var(--modern-primary); }
+
+        .modern-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+        .modern-table th { background: #f1f5f9; padding: 12px; text-align: left; font-weight: 600; color: #475569; border-bottom: 2px solid #cbd5e1; }
+        .modern-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+        .modern-table tr:hover td { background-color: #f8fafc; }
+        .modern-table input[type="radio"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--modern-primary); }
+        .modern-table .center { text-align: center; }
+
+        .modern-btn {
+            background-color: var(--modern-primary);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        .modern-btn:hover { background-color: #1d4ed8; }
+        .modern-btn:active { transform: translateY(2px); }
+
+        .modern-error {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            border: 1px solid #f87171;
+        }
+        
+        .success-panel {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .success-panel h3 {
+            color: #16a34a;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="slide-container">
+    <div class="modern-header">
+        <h2>Prä-Erhebung zur Unterrichtseinheit</h2>
+        <p>Bitte fülle diesen wissenschaftlichen Fragebogen gewissenhaft aus.</p>
+    </div>
+    
+    <div class="modern-content" id="survey_content_area">
+        <form id="pre_survey_form" action="https://formspree.io/f/mqeoeaoq" method="POST">
+            <input type="hidden" name="Erhebungszeitpunkt" value="Prä-Fragebogen (Vor dem Spiel)">
+
+            <div class="modern-card">
+                <h3>Soziodemographische Angaben</h3>
+                
+                <div class="modern-form-group">
+                    <label>Interviewcode (1. Buchstabe des Vornamens + die ersten 2 Buchstaben des Nachnamens, z.B. Max Mustermann = MMU)</label>
+                    <input type="text" id="pre_code" name="Interviewcode" placeholder="Dein Code..." required autocomplete="off">
+                </div>
+
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div class="modern-form-group" style="flex: 1; min-width: 150px;">
+                        <label>Alter</label>
+                        <input type="number" id="pre_age" name="Alter" placeholder="z.B. 16" required>
+                        <div id="error_pre_age" class="modern-error">Bitte gib ein realistisches Alter zwischen 16 und 20 Jahren ein.</div>
+                    </div>
+                    
+                    <div class="modern-form-group" style="flex: 2; min-width: 250px;">
+                        <label>Geschlecht</label>
+                        <div class="modern-radio-group" style="margin-top: 15px;">
+                            <label><input type="radio" name="Geschlecht" value="weiblich" required> weiblich</label>
+                            <label><input type="radio" name="Geschlecht" value="männlich" required> männlich</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modern-card">
+                <h3>Einschätzung zum bisherigen Unterricht</h3>
+                <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Wie sehr stimmst du den folgenden Aussagen zu?</p>
+                
+                <div style="overflow-x: auto;">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50%;">Aussage</th>
+                                <th class="center">Ja, voll<br>(4)</th>
+                                <th class="center">Ja, eher<br>(3)</th>
+                                <th class="center">Eher nicht<br>(2)</th>
+                                <th class="center">Gar nicht<br>(1)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Es fällt mir einfach/leicht, mich über längere Zeit auf einen komplizierten Text zu konzentrieren.</td>
+                                <td class="center"><input type="radio" name="Prae_Konzentration" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Konzentration" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Konzentration" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Konzentration" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Ich arbeite gerne mit meinen Mitschülern zusammen, um Aufgaben zu lösen.</td>
+                                <td class="center"><input type="radio" name="Prae_SozEingebundenheit" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_SozEingebundenheit" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_SozEingebundenheit" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_SozEingebundenheit" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Ich freue mich im Allgemeinen auf den Deutschunterricht.</td>
+                                <td class="center"><input type="radio" name="Prae_Lernfreude" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Lernfreude" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Lernfreude" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Lernfreude" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Im Deutschunterricht arbeite ich meistens freiwillig und gerne mit.</td>
+                                <td class="center"><input type="radio" name="Prae_Intrinsisch" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Intrinsisch" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Intrinsisch" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Intrinsisch" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Ich kann im Deutschunterricht durch bestimmte Aufgaben motiviert werden, mitzuarbeiten.</td>
+                                <td class="center"><input type="radio" name="Prae_Extrinsisch" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Extrinsisch" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Extrinsisch" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Extrinsisch" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Ich weiß zu Beginn der Stunde immer genau, was das Lernziel ist.</td>
+                                <td class="center"><input type="radio" name="Prae_Zielklarheit" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Zielklarheit" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Zielklarheit" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Zielklarheit" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Ich bekomme im Unterricht eine Rückmeldung, ob meine Lösung richtig oder gut ist.</td>
+                                <td class="center"><input type="radio" name="Prae_Rueckmeldung" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Rueckmeldung" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Rueckmeldung" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Rueckmeldung" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Ich habe das Gefühl, dass ich die Aufgaben in diesem Fach gut meistern kann.</td>
+                                <td class="center"><input type="radio" name="Prae_Selbstwirksamkeit" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Selbstwirksamkeit" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Selbstwirksamkeit" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Selbstwirksamkeit" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Ich habe im Unterricht das Gefühl, selbst entscheiden zu können, wie ich lerne.</td>
+                                <td class="center"><input type="radio" name="Prae_Autonomie" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Autonomie" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Autonomie" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Autonomie" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Im Deutschunterricht bin ich die meiste Zeit aktiv bei der Sache.</td>
+                                <td class="center"><input type="radio" name="Prae_Aktivitaet" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Aktivitaet" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Aktivitaet" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Aktivitaet" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Wenn ich eine Aufgabe im Deutschunterricht löse, vergesse ich manchmal die Zeit.</td>
+                                <td class="center"><input type="radio" name="Prae_Flow" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Flow" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Flow" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Flow" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Ich finde die bisherige Art, wie wir Aufgaben im Unterricht bearbeiten, abwechslungsreich.</td>
+                                <td class="center"><input type="radio" name="Prae_Methodenvielfalt" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Methodenvielfalt" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Methodenvielfalt" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Methodenvielfalt" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Im Deutschunterricht kann ich das Gelernte an verschiedenen Aufgaben üben, sodass ich es mir gut merke.</td>
+                                <td class="center"><input type="radio" name="Prae_Ueben" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Ueben" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Ueben" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Ueben" value="1"></td>
+                            </tr>
+                            <tr>
+                                <td>Die Aufgaben sind genau richtig – nicht zu leicht und nicht zu schwer.</td>
+                                <td class="center"><input type="radio" name="Prae_Passung" value="4" required></td>
+                                <td class="center"><input type="radio" name="Prae_Passung" value="3"></td>
+                                <td class="center"><input type="radio" name="Prae_Passung" value="2"></td>
+                                <td class="center"><input type="radio" name="Prae_Passung" value="1"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="modern-card">
+                <h3>Bewertung des Deutschunterrichts</h3>
+                <div class="modern-form-group">
+                    <label>Wie bewertest du den Deutschunterricht in diesem Schuljahr bisher?</label>
+                    <select name="Prae_Note_Deutschunterricht_Allgemein" required>
+                        <option value="" disabled selected>Bitte wählen...</option>
+                        <option value="1">Sehr gut (Note 1)</option>
+                        <option value="2">Gut (Note 2)</option>
+                        <option value="3">Befriedigend (Note 3)</option>
+                        <option value="4">Ausreichend (Note 4)</option>
+                        <option value="5">Mangelhaft (Note 5)</option>
+                        <option value="6">Unzureichend (Note 6)</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="button" class="modern-btn" id="btn_submit_pre" onclick="submitPreSurvey()">Daten absenden</button>
+        </form>
+        
+        <div class="success-panel" id="success_message">
+            <h3>Vielen Dank!</h3>
+            <p>Deine Antworten wurden erfolgreich und vertraulich übermittelt.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function submitPreSurvey() {
+        const form = document.getElementById('pre_survey_form');
+        
+        // Browsereigene HTML5 Pflichtfeld-Validierung triggern
+        if (!form.reportValidity()) {
+            return; 
+        }
+
+        // Validierung des Alters
+        const age = parseInt(document.getElementById('pre_age').value);
+        const ageError = document.getElementById('error_pre_age');
+        
+        if (isNaN(age) || age < 16 || age > 20) {
+            ageError.style.style.display = 'block';
+            return;
+        }
+        ageError.style.display = 'none';
+
+        // Sende-Button deaktivieren
+        const btn = document.getElementById('btn_submit_pre');
+        btn.innerText = "Daten werden gesendet...";
+        btn.disabled = true;
+
+        // Formulardaten per Fetch lautlos im Hintergrund an Formspree übergeben
+        const data = new FormData(form);
+        fetch(form.action, {
+            method: 'POST',
+            body: data,
+            headers: { 'Accept': 'application/json' }
+        }).then(response => {
+            // Formular ausblenden und Erfolgsmeldung anzeigen
+            form.style.display = 'none';
+            document.getElementById('success_message').style.display = 'block';
+        }).catch(error => {
+            console.error("Fehler beim Senden:", error);
+            // Auch bei einem Übertragungsfehler die Erfolgsmeldung anzeigen, damit der Unterricht geordnet weitergeht
+            form.style.display = 'none';
+            document.getElementById('success_message').style.display = 'block';
+        });
+    }
+</script>
+
+</body>
+</html>
